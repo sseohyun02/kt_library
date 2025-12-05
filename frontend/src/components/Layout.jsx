@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import logo from "../assets/logo.png";
 
 export default function Layout({ children }) {
@@ -5,9 +6,11 @@ export default function Layout({ children }) {
         <div className="layout">
             <header className="nav-bar">
                 <div className="nav-left">
-                    <div className="brand">
-                        <img src={logo} alt="로고" className="brand-logo" />
-                    </div>
+                    <Link to="/" className="brand-link">
+                        <div className="brand">
+                            <img src={logo} alt="로고" className="brand-logo" />
+                        </div>
+                    </Link>
                     <div className="nav-links">
                         <button className="nav-link active">내 서재</button>
                         <button className="nav-link">관리</button>
@@ -26,7 +29,9 @@ export default function Layout({ children }) {
                             &#128269;
                         </span>
                     </div>
-                    <button className="login-btn">로그인</button>
+                    <Link to="/login" className="login-btn">
+                        로그인
+                    </Link>
                 </div>
             </header>
 

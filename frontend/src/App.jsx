@@ -5,6 +5,7 @@ import BookList from "./pages/BookList.jsx";
 import BookCreate from "./pages/BookCreate";
 import BookDetail from "./pages/BookDetail";
 import BookEdit from "./pages/BookEdit";
+import Login from "./pages/Login";
 
 function App() {
     return (
@@ -15,6 +16,7 @@ function App() {
                 <Route path="/books/:id" element={<BookDetail />} />
                 <Route path="/books/new" element={<BookCreate />} />
                 <Route path="/books/:id/edit" element={<BookEdit />} />
+                <Route path="/login" element={<Login />} />
             </Routes>
         </Layout>
     );
