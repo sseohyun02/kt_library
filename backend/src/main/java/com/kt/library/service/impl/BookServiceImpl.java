@@ -1,6 +1,6 @@
 package com.kt.library.service.impl;
 
-import com.kt.library.entity.Book;
+import com.kt.library.domain.Book;
 import com.kt.library.repository.BookRepository;
 import com.kt.library.service.BookService;
 
@@ -11,7 +11,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 // BookService interface에서 정의한 기능들을 실제 구현하는 클래스
-
 @Service
 @RequiredArgsConstructor // BookRepository 생성자 자동 주입
 public class BookServiceImpl implements BookService {
@@ -22,10 +21,6 @@ public class BookServiceImpl implements BookService {
     // 사용자가 입력한 제목, 내용, 장르 등으로 새로운 책을 DB에 저장한다.
     @Override
     public Book createBook(Book book) {
-
-        // 등록 시간 저장
-        book.setCreateDate(LocalDateTime.now());
-
         // DB에 저장
         return bookRepository.save(book);
     }
@@ -57,13 +52,11 @@ public class BookServiceImpl implements BookService {
         Book book = getBook(id);
 
         // 명세서에 있는 필드들만 수정
-        book.setTitle(updatedBook.getTitle());
-        book.setContent(updatedBook.getContent());
-        book.setGenre(updatedBook.getGenre());
-        book.setLanguage(updatedBook.getLanguage());
+        if (updatedBook.getTitle() != null)   book.setTitle(updatedBook.getTitle());
+        if (updatedBook.getContent() != null) book.setContent(updatedBook.getContent());
+        if (updatedBook.getGenre() != null)   book.setGenre(updatedBook.getGenre());
+        if (updatedBook.getLanguage() != null)book.setLanguage(updatedBook.getLanguage());
 
-        // 수정 시간 저장
-        book.setUpdateDate(LocalDateTime.now());
 
         // 변경된 값을 다시 저장
         return bookRepository.save(book);

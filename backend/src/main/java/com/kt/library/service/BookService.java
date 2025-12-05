@@ -1,5 +1,6 @@
 package com.kt.library.service;
-import com.kt.library.entity.book;
+
+import com.kt.library.domain.Book;
 import java.util.List;
 
 // Book 관련 기능을 모은 interface
