@@ -1,3 +1,4 @@
+/* 전역 폰트/렌더링 설정 */
 :root {
     font-family: "Noto Sans KR", "Segoe UI", sans-serif;
     line-height: 1.5;
@@ -15,6 +16,7 @@
     box-sizing: border-box;
 }
 
+/* 페이지 기본 배경/여백 */
 body {
     margin: 0;
     background: #f7f8fc;
@@ -30,15 +32,20 @@ a {
     text-decoration: none;
 }
 
+/* 기본 버튼 리셋 */
 button {
     font-family: inherit;
 }
 
+/* 안내: `.클래스명`은 해당 클래스를 가진 모든 요소에 적용됩니다. */
+
+/* 레이아웃 컨테이너 */
 .layout {
     min-height: 100vh;
     background: #f7f8fc;
 }
 
+/* 상단 네비게이션 바 */
 .nav-bar {
     display: flex;
     align-items: center;
@@ -51,7 +58,7 @@ button {
 .nav-left {
     display: flex;
     align-items: center;
-    gap: 28px;
+    gap: 28px; /* 로고와 탭 사이 간격 */
 }
 
 .brand-link {
@@ -60,42 +67,49 @@ button {
 }
 
 .brand-logo {
-    height: 44px;
+    height: 44px; /* 헤더 높이에 맞춘 로고 크기 */
     width: auto;
 }
 
+/* 탭형 네비게이션 링크 그룹 */
 .nav-links {
     display: flex;
     gap: 22px;
 }
 
+/* 네비게이션 링크 버튼 */
 .nav-link {
     background: none;
     border: none;
     font-size: 18px;
     padding: 6px 0;
-    color: #777;
+    color: #2e3135;
     cursor: pointer;
     border-bottom: 3px solid transparent;
-    transition: color 0.2s ease, border-color 0.2s ease;
+    font-weight: 500;
+    transition: border-color 0.2s ease, font-weight 0.2s ease;
 }
 
 .nav-link.active {
-    color: #0f0f10;
-    font-weight: 700;
-    border-color: #2e3135;
+    color: #2e3135;
+    font-weight: 500;
+    border-color: transparent;
 }
 
 .nav-link:hover {
     color: #2e3135;
+    font-weight: 700;
+    border-color: #2e3135;
 }
 
+/* 오른쪽 영역: 검색창 + 로그인 버튼 */
 .nav-right {
     display: flex;
     align-items: center;
-    gap: 16px;
+    gap: 16px; /* 검색창과 로그인 버튼 간격 */
 }
 
+/* 검색창 (폼) */
 .search-bar {
     display: flex;
     align-items: center;
@@ -107,6 +121,7 @@ button {
     border: 1px solid #e5e7eb;
 }
 
+/* 검색 입력 필드 */
 .search-bar input {
     border: none;
     background: transparent;
@@ -116,10 +131,17 @@ button {
     color: #333;
 }
 
+/* 검색 제출 버튼 (돋보기) */
 .search-icon {
     font-size: 16px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    outline: none;
+    box-shadow: none;
 }
 
+/* 로그인 버튼 */
 .login-btn {
     display: inline-flex;
     align-items: center;
@@ -140,10 +162,12 @@ button {
     box-shadow: 0 8px 16px rgba(47, 124, 246, 0.35);
 }
 
+/* 본문 영역 여백 */
 .layout-body {
-    padding: 40px 56px 80px;
+    padding: 80px 72px 160px;
 }
 
+/* Top 10 섹션 레이아웃 */
 .top-books {
     max-width: 1280px;
     margin: 0 auto;
@@ -163,6 +187,7 @@ button {
     letter-spacing: -0.2px;
 }
 
+/* 정렬/자세히보기 컨트롤 */
 .sort-controls {
     display: flex;
     align-items: center;
@@ -181,6 +206,7 @@ button {
 
 .sort-link.active {
     color: #111;
+    font-weight: 800;
 }
 
 .view-link {
@@ -188,21 +214,29 @@ button {
     border: none;
     color: #7d7d7d;
     cursor: pointer;
-    text-decoration: underline;
+    text-decoration: none;
     font-size: 13px;
     padding-left: 6px;
+    transition: color 0.15s ease, text-decoration-color 0.15s ease;
+}
+
+.view-link:hover {
+    color: #2e3135;
+    text-decoration: underline;
 }
 
 .divider {
     color: #c4c4c4;
 }
 
+/* 카드 캐러셀 래퍼 */
 .carousel {
     display: flex;
     align-items: center;
     gap: 18px;
 }
 
+/* 좌우 이동 버튼 */
 .arrow-button {
     width: 42px;
     height: 42px;
@@ -221,25 +255,34 @@ button {
     box-shadow: 0 10px 24px rgba(0, 0, 0, 0.18);
 }
 
+/* 카드 트랙: 가로 스크롤 */
 .card-track {
     flex: 1;
     display: flex;
-    justify-content: center;
-    gap: 28px;
+    gap: 28px; /* 카드 간격 */
+    overflow-x: auto; /* 가로 스크롤 허용 */
+    padding: 8px 4px 12px; /* 트랙 상/좌/하 여백 */
 }
 
+.card-track::-webkit-scrollbar {
+    display: none;
+}
+
+/* 하단 CTA 버튼 영역 */
 .top-cta {
     display: flex;
     justify-content: center;
     margin-top: 28px;
 }
 
+/* 도서 카드 */
 .book-card {
     position: relative;
+    min-width: 230px;
     width: 230px;
     background: #ffffff;
     border-radius: 24px;
-    padding: 18px 18px 22px;
+    padding: 32px 18px 26px; /* 상단 여백을 넉넉히 두어 뱃지가 가리지 않게 */
     box-shadow: 0 18px 40px rgba(20, 35, 70, 0.12);
     display: flex;
     flex-direction: column;
@@ -247,20 +290,79 @@ button {
     gap: 14px;
 }
 
-.book-cover-wrap {
-    width: 100%;
+/* 카드 링크/placeholder 래퍼 */
+.book-card-link {
+    text-decoration: none;
+    color: inherit;
+    display: block; /* 카드 전체를 클릭 영역으로 */
 }
 
+.book-cover-wrap {
+    width: 100%; /* 표지/placeholder가 카드 폭을 꽉 채우도록 */
+}
+
+/* 책 표지 이미지 */
 .book-cover {
     width: 100%;
     height: 320px;
-    object-fit: cover;
+    object-fit: cover; /* 비율 유지하며 채우기 */
     border-radius: 16px;
 }
 
+/* 표지 이미지가 없을 때 보여줄 placeholder 블록 */
+.book-cover.placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #eef1f5;
+    color: #9aa4b5;
+    border-radius: 16px;
+    height: 320px;
+    border: 1px dashed #d3d8df;
+    font-weight: 700;
+    font-size: 14px;
+}
+
+/* 커스텀 스크롤바 컨테이너 */
+.custom-scrollbar {
+    margin: 8px auto 4px;
+    max-width: 720px;
+    width: 100%;
+    padding: 0 32px; /* 좌우 여백으로 가운데 정렬 */
+}
+
+/* 스크롤바 트랙 */
+.custom-scrollbar-track {
+    position: relative;
+    width: 100%;
+    height: 12px;
+    background: #e1e4e9;
+    border-radius: 999px;
+    cursor: pointer;
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.08);
+}
+
+/* 스크롤바 썸 */
+.custom-scrollbar-thumb {
+    position: absolute;
+    top: 0;
+    height: 12px;
+    background: #bfc4cd;
+    border-radius: 999px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.12);
+    transition: left 0.1s ease; /* 썸 이동 보간 */
+}
+
+/* 썸 드래그 상태 */
+.custom-scrollbar-thumb.dragging {
+    cursor: grabbing;
+    background: #a5abba;
+}
+
+/* 순위 뱃지 */
 .book-rank {
     position: absolute;
-    top: -18px;
+    top: -30px;
     left: 50%;
     transform: translateX(-50%);
     background: #f1f1f1;
@@ -273,6 +375,13 @@ button {
     font-weight: 800;
     color: #4b4b4b;
     box-shadow: 0 10px 24px rgba(0, 0, 0, 0.14);
+    transition: background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.book-card:hover .book-rank {
+    background: #2f7cf6;
+    color: #ffffff;
+    box-shadow: 0 12px 26px rgba(47, 124, 246, 0.35);
 }
 
 .book-meta {
@@ -293,6 +402,9 @@ button {
 }
 
 .primary-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     margin-top: 4px;
     background: #2f7cf6;
     border: none;
@@ -314,6 +426,7 @@ button {
     width: 100%;
 }
 
+/* 로그인 페이지 전용 레이아웃 */
 .login-page {
     display: flex;
     justify-content: center;
@@ -365,51 +478,4 @@ button {
     box-shadow: 0 0 0 3px rgba(47, 124, 246, 0.18);
 }
 
-@media (max-width: 900px) {
-    .nav-bar {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 14px;
-    }
-
-    .nav-right {
-        width: 100%;
-        justify-content: space-between;
-    }
-
-    .layout-body {
-        padding: 28px 20px 60px;
-    }
-
-    .carousel {
-        gap: 12px;
-    }
-
-    .card-track {
-        gap: 18px;
-        flex-wrap: wrap;
-    }
-
-    .arrow-button {
-        display: none;
-    }
-}
-
-@media (max-width: 600px) {
-    .nav-links {
-        gap: 14px;
-    }
-
-    .search-bar {
-        min-width: 0;
-        width: 100%;
-    }
-
-    .book-card {
-        width: 200px;
-    }
-
-    .book-cover {
-        height: 280px;
-    }
-}
+/* 반응형 설정을 제거하고 PC 전용 레이아웃만 유지 */
