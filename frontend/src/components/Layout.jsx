@@ -1,22 +1,36 @@
-import AppBar from '@mui/material/AppBar';
-import Toolbar from '@mui/material/Toolbar';
-import Typography from '@mui/material/Typography';
-import Box from '@mui/material/Box';
+import logo from "../assets/logo.png";
 
 export default function Layout({ children }) {
     return (
-        <>
-            <AppBar position="static">
-                <Toolbar>
-                    <Typography variant="h6" component="div">
-                        도서 관리 시스템
-                    </Typography>
-                </Toolbar>
-            </AppBar>
+        <div className="layout">
+            <header className="nav-bar">
+                <div className="nav-left">
+                    <div className="brand">
+                        <img src={logo} alt="로고" className="brand-logo" />
+                    </div>
+                    <div className="nav-links">
+                        <button className="nav-link active">내 서재</button>
+                        <button className="nav-link">관리</button>
+                        <button className="nav-link">관심</button>
+                    </div>
+                </div>
 
-            <Box sx={{ padding: 2 }}>
-                {children}
-            </Box>
-        </>
+                <div className="nav-right">
+                    <div className="search-bar">
+                        <input
+                            type="text"
+                            placeholder="도서 검색"
+                            aria-label="도서 검색"
+                        />
+                        <span className="search-icon" aria-hidden="true">
+                            &#128269;
+                        </span>
+                    </div>
+                    <button className="login-btn">로그인</button>
+                </div>
+            </header>
+
+            <main className="layout-body">{children}</main>
+        </div>
     );
 }
