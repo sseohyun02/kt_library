@@ -14,7 +14,7 @@ function App() {
             <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="/books" element={<BookList />} />
-                <Route path="/books/:id" element={<BookDetail />} />
+                <Route path="/books/detail" element={<BookDetail />} />
                 <Route path="/books/new" element={<BookCreate />} />
                 <Route path="/books/edit/:id" element={<BookCreate />} />  {/* 수정 모드 */}
                 <Route path="/login" element={<Login />} />

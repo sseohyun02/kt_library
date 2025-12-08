@@ -33,8 +33,16 @@ export default function BookCard({ id, title, author, image, rank }) {
     }
 
     return (
-        <Link to={`/books/${id}`} className="book-card-link">
+        // <Link to={`/books/${id}`} className="book-card-link">
+        //     {card}
+        // </Link>
+        <Link to="/books/detail"
+            state={{ title, author, image }} // 여기서 state 전달
+            // style={{ textDecoration: "none", color: "inherit" }} // 링크 스타일 제거
+        >
             {card}
+            {/*<div className="book-card-link" style={{ cursor: "pointer" }}>*/}
+            {/*</div>*/}
         </Link>
     );
 }
