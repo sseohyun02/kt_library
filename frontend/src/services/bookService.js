@@ -1,7 +1,7 @@
 import axios from 'axios';
 // npm install axios
 
-const API_BASE_URL = 'http://localhost:8080/books' ; //추후 api링크 연결
+const API_BASE_URL =  'http://localhost:8080/books'; //추후 api링크 연결
 
 //전체 책 목록
 export const fetchBooks = async () => {

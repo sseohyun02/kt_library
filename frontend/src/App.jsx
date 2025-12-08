@@ -7,12 +7,14 @@ import BookDetail from "./pages/BookDetail";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import MyPage from "./pages/MyPage";
+import TestPage from './pages/TestPage';
 
 function App() {
     return (
         <Layout>
             <Routes>
                 <Route path="/" element={<Home />} />
+                <Route path="/test" element={<TestPage />} />
                 <Route path="/books" element={<BookList />} />
                 <Route path="/books/detail" element={<BookDetail />} />
                 <Route path="/books/new" element={<BookCreate />} />
