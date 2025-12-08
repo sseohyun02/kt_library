@@ -162,3 +162,39 @@ export default function TopBooks() {
         </section>
     );
 }
+
+function CustomScrollbar({
+    barRef,
+    scrollPos,
+    maxScroll,
+    barWidth,
+    thumbWidth,
+    onBarClick,
+    onThumbMouseDown,
+    isDragging,
+}) {
+    const usable = Math.max(barWidth - thumbWidth, 0);
+    const ratio = maxScroll > 0 ? scrollPos / maxScroll : 0;
+    const thumbLeft = Math.min(Math.max(ratio * usable, 0), usable);
+
+    const handleClick = (e) => {
+        if (!barRef.current || maxScroll <= 0 || barWidth === 0) return;
+        const rect = barRef.current.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const clamped = Math.min(Math.max(x, 0), barWidth);
+        const nextScroll = (clamped / barWidth) * maxScroll;
+        onBarClick(nextScroll);
+    };
+
+    return (
+        <div className="custom-scrollbar">
+            <div className="custom-scrollbar-track" ref={barRef} onClick={handleClick}>
+                <div
+                    className={`custom-scrollbar-thumb ${isDragging ? "dragging" : ""}`}
+                    style={{ width: `${thumbWidth}px`, left: `${thumbLeft}px` }}
+                    onMouseDown={onThumbMouseDown}
+                />
+            </div>
+        </div>
+    );
+}
