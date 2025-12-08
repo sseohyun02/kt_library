@@ -19,8 +19,7 @@ public class GlobalExceptionHandler {
         return createErrorResponse(HttpStatus.NOT_FOUND, e.getMessage());
     }
 
-    // 현재 동작하지 않음
-    // 401 세션 만료
+    // 401 세션 만료 - 로그인 안 한 사람 막기
     @ExceptionHandler(UnAuthorizedException.class)
     public ResponseEntity<Map<String, String>> handleUnAuthorized(UnAuthorizedException e) {
         return createErrorResponse(HttpStatus.UNAUTHORIZED, e.getMessage());
