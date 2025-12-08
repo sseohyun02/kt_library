@@ -54,9 +54,9 @@ public class UserServiceImpl implements UserService {
     public UserResponse login(LoginRequest request){
 
         // 1. 아이디로 회원 조회
-        // 수정됨: getLoginID() -> getLoginId() (소문자 d)
-        User user = userRepository.findByLoginId(request.getLoginId())
-                .orElseThrow(() -> new IllegalArgumentException("아이디가 존재하지 않습니다."));
+        // 수정됨: getLoginID() -> getEmail() (소문자 d)
+        User user = userRepository.findByLoginId(request.getEmail())
+                .orElseThrow(() -> new IllegalArgumentException("이메일이 존재하지 않습니다."));
 
         // 2. 비밀번호 확인
         if(!passwordEncoder.matches(request.getPassword(), user.getPassword())){
