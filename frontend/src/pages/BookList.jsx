@@ -8,7 +8,7 @@ import Paper from '@mui/material/Paper';
 
 // ⭐ 제거: Mock을 제거하고 API로 데이터 불러오기
 // import { mockBooks } from "../data/mockBooks";
-import { useState } from "react";
+// import { useState } from "react";
 
 // ⭐ 추가: Mock을 제거하고 API로 데이터 불러오기
 import { useEffect, useState } from "react";
