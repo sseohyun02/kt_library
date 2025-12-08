@@ -1,5 +1,6 @@
 package com.kt.library.service;
 
+import com.kt.library.dto.request.LoginRequest;
 import com.kt.library.dto.request.UserSignupRequest;
 import com.kt.library.dto.response.UserResponse;
 
@@ -7,4 +8,6 @@ import com.kt.library.dto.response.UserResponse;
 public interface UserService {
     // 회원가입
     UserResponse signup(UserSignupRequest request);
+
+    UserResponse login(LoginRequest request);
 }

@@ -1,6 +1,7 @@
 package com.kt.library.service.impl;
 
 import com.kt.library.domain.User;
+import com.kt.library.dto.request.LoginRequest;
 import com.kt.library.dto.request.UserSignupRequest;
 import com.kt.library.dto.response.UserResponse;
 import com.kt.library.repository.UserRepository;
@@ -46,5 +47,24 @@ public class UserServiceImpl implements UserService {
 
         // 6. 응답 DTO로 반환
         return new UserResponse(saved);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public UserResponse login(LoginRequest request){
+
+        // 1. 아이디로 회원 조회
+        // 수정됨: getLoginID() -> getLoginId() (소문자 d)
+        User user = userRepository.findByLoginId(request.getLoginId())
+                .orElseThrow(() -> new IllegalArgumentException("아이디가 존재하지 않습니다."));
+
+        // 2. 비밀번호 확인
+        if(!passwordEncoder.matches(request.getPassword(), user.getPassword())){
+            // 메시지도 조금 더 자연스럽게 수정했습니다 ("존재하지" -> "일치하지")
+            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+        }
+
+        // 3. 로그인 성공 시 회원 정보 반환
+        return new UserResponse(user);
     }
 }
