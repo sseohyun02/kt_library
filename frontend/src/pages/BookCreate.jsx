@@ -11,7 +11,6 @@ import {
     FormControl
 } from "@mui/material";
 
-// 🔥 mockBooks 삭제 → API 연동 추가
 import { createBook, getBook, updateBook } from "../services/bookService";
 
 export default function BookCreate() {
@@ -31,7 +30,7 @@ export default function BookCreate() {
     const [coverImage, setCoverImage] = useState(null);
     const [isGenerating, setIsGenerating] = useState(false);
 
-    // 📌 수정 모드일 때 기존 데이터 로드 (mockbooks → getBook API로 변경)
+    // 📌 수정 모드일 때 기존 데이터 로드
     useEffect(() => {
         if (!isEditMode) return;
 
@@ -47,7 +46,7 @@ export default function BookCreate() {
                     introduction: book.introduction || ''
                 });
 
-                // 서버 책 이미지
+                // 서버 책 이미지 (Image 엔티티 있다면 여기 맞춰서 사용)
                 setCoverImage(book?.image?.imageUrl || null);
 
             } catch (error) {
@@ -77,20 +76,22 @@ export default function BookCreate() {
         }, 2000);
     };
 
-    // 📌 등록 / 수정 처리 (mock → API 연동)
+    // 📌 등록 / 수정 처리
     const handleSubmit = async () => {
         if (!coverImage) {
             alert('먼저 표지를 생성해주세요!');
             return;
         }
 
+        // 🔥 백엔드 DTO: title, content, author, language, genre
+        // author는 백엔드에서 로그인 유저 이름으로 채우고 있어서 여기선 안 보냄
         const dto = {
             title: formData.title,
             content: formData.content,
-            introduction: formData.introduction,
-            language: formData.language,
-            genre: formData.genre,
-            coverImage: coverImage
+            language: formData.language, // KO / EN / JP / CN
+            genre: formData.genre        // NOVEL / ESSAY / HISTORY / FANTASY
+            // introduction, coverImage는 현재 백엔드 DTO에 없으니 굳이 안 보내도 되지만
+            // Jackson이 기본 설정이면 추가 필드는 무시되므로 큰 문제는 없음.
         };
 
         try {
@@ -235,7 +236,7 @@ export default function BookCreate() {
                                 />
                             </Box>
 
-                            {/* 2. 언어 */}
+                            {/* 2. 언어 (백엔드 enum: KO, EN, JP, CN) */}
                             <Box>
                                 <Typography variant="body1" sx={{ mb: 1.5, fontWeight: 600, fontSize: '15px', color: '#495057' }}>
                                     2. 언어를 선택하시오
@@ -255,11 +256,13 @@ export default function BookCreate() {
                                         <MenuItem value="" disabled>언어를 선택하세요</MenuItem>
                                         <MenuItem value="KO">한국어</MenuItem>
                                         <MenuItem value="EN">영어</MenuItem>
+                                        <MenuItem value="JP">일본어</MenuItem>
+                                        <MenuItem value="CN">중국어</MenuItem>
                                     </Select>
                                 </FormControl>
                             </Box>
 
-                            {/* 3. 장르 */}
+                            {/* 3. 장르 (백엔드 enum: NOVEL, ESSAY, HISTORY, FANTASY) */}
                             <Box>
                                 <Typography variant="body1" sx={{ mb: 1.5, fontWeight: 600, fontSize: '15px', color: '#495057' }}>
                                     3. 장르를 선택하시오
@@ -277,11 +280,10 @@ export default function BookCreate() {
                                         }}
                                     >
                                         <MenuItem value="" disabled>장르를 선택하세요</MenuItem>
-                                        <MenuItem value="SF">SF</MenuItem>
-                                        <MenuItem value="로맨스">로맨스</MenuItem>
-                                        <MenuItem value="공포">공포</MenuItem>
-                                        <MenuItem value="추리">추리</MenuItem>
-                                        <MenuItem value="개그">개그</MenuItem>
+                                        <MenuItem value="NOVEL">소설</MenuItem>
+                                        <MenuItem value="ESSAY">에세이</MenuItem>
+                                        <MenuItem value="HISTORY">역사</MenuItem>
+                                        <MenuItem value="FANTASY">판타지</MenuItem>
                                     </Select>
                                 </FormControl>
                             </Box>
@@ -310,7 +312,6 @@ export default function BookCreate() {
                                     }}
                                 />
 
-                                {/* 글자 수 표시 */}
                                 <Typography
                                     variant="caption"
                                     sx={{

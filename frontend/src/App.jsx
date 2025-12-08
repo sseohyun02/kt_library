@@ -15,10 +15,15 @@ function App() {
             <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="/test" element={<TestPage />} />
+
                 <Route path="/books" element={<BookList />} />
-                <Route path="/books/detail" element={<BookDetail />} />
+
+                {/* 기존: /books/detail → 변경: /books/:id */}
+                <Route path="/books/:id" element={<BookDetail />} />
+
                 <Route path="/books/new" element={<BookCreate />} />
-                <Route path="/books/edit/:id" element={<BookCreate />} />  {/* 수정 모드 */}
+                <Route path="/books/edit/:id" element={<BookCreate />} />
+
                 <Route path="/login" element={<Login />} />
                 <Route path="/signup" element={<Signup />} />
                 <Route path="/mypage" element={<MyPage />} />

@@ -1,10 +1,5 @@
 import { Link } from "react-router-dom";
 
-/**
- * 단일 도서 카드
- * - 이미지가 없으면 placeholder 표시
- * - id가 없으면 링크 비활성화(placeholder 카드)
- */
 export default function BookCard({ id, title, author, image, rank }) {
     const hasImage = Boolean(image);
     const clickable = id !== null && id !== undefined;
@@ -33,16 +28,9 @@ export default function BookCard({ id, title, author, image, rank }) {
     }
 
     return (
-        // <Link to={`/books/${id}`} className="book-card-link">
-        //     {card}
-        // </Link>
-        <Link to="/books/detail"
-            state={{ title, author, image }} // 여기서 state 전달
-            // style={{ textDecoration: "none", color: "inherit" }} // 링크 스타일 제거
-        >
+        // 수정됨: /books/detail → /books/${id}
+        <Link to={`/books/${id}`} className="book-card-link">
             {card}
-            {/*<div className="book-card-link" style={{ cursor: "pointer" }}>*/}
-            {/*</div>*/}
         </Link>
     );
 }

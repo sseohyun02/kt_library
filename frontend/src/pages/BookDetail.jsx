@@ -15,7 +15,8 @@ export default function BookDetail() {
 
     return (
         <Box sx={{ display: 'flex', p: 2 }}>
-            {/* ------------------ 이미지 영역 ------------------ */}
+
+            {/* ---------------- 이미지 ---------------- */}
             <Box
                 sx={{
                     width: '400px',
@@ -28,7 +29,7 @@ export default function BookDetail() {
             >
                 {book.image ? (
                     <img
-                        src={book.image}
+                        src={book.image.imageUrl}   // imageUrl 추가
                         alt={book.title}
                         style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                     />
@@ -49,18 +50,8 @@ export default function BookDetail() {
                 )}
             </Box>
 
-            {/* ------------------ 오른쪽 상세 영역 ------------------ */}
-            <Box
-                sx={{
-                    flexGrow: 1,
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: 3,
-                    pl: 6,
-                    maxWidth: 800,
-                    ml: 10
-                }}
-            >
+            {/* ---------------- 오른쪽 상세 ---------------- */}
+            <Box sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', gap: 3, pl: 6, maxWidth: 800, ml: 10 }}>
                 {/* 제목 */}
                 <Box
                     sx={{
@@ -78,7 +69,7 @@ export default function BookDetail() {
                     {book.title}
                 </Box>
 
-                {/* 정보(저자, 장르, 언어 등) */}
+                {/* 정보 */}
                 <Box
                     sx={{
                         alignSelf: 'flex-end',
@@ -95,60 +86,24 @@ export default function BookDetail() {
                         { label: '언어', value: book.language },
                         { label: '전체 페이지 수', value: book.pages },
                     ].map(({ label, value }) => (
-                        <Box
-                            key={label}
-                            sx={{
-                                border: '1px solid #ccc',
-                                borderRadius: 1,
-                                px: 2,
-                                py: 1,
-                                textAlign: 'right',
-                            }}
-                        >
+                        <Box key={label} sx={{ border: '1px solid #ccc', borderRadius: 1, px: 2, py: 1, textAlign: 'right' }}>
                             {label}: {value || '-'}
                         </Box>
                     ))}
                 </Box>
 
-                {/* 줄거리 / 소개 */}
-                <Box
-                    sx={{
-                        border: '1px solid #ccc',
-                        borderRadius: 1,
-                        p: 3,
-                        minHeight: 200,
-                        whiteSpace: 'pre-wrap',
-                        overflowY: 'auto',
-                        textAlign: 'left',
-                    }}
-                >
+                {/* 내용 */}
+                <Box sx={{ border: '1px solid #ccc', borderRadius: 1, p: 3, minHeight: 200, whiteSpace: 'pre-wrap', overflowY: 'auto', textAlign: 'left' }}>
                     {book.content || '줄거리 정보가 없습니다.'}
                 </Box>
 
-                {/* 생성일, 수정일 */}
-                <Box
-                    sx={{
-                        display: 'flex',
-                        flexDirection: 'column',
-                        gap: 1,
-                        alignSelf: 'flex-end',
-                    }}
-                >
+                {/* 날짜 */}
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, alignSelf: 'flex-end' }}>
                     {[
                         { label: '등록일', value: book.createDate },
                         { label: '최종 수정일', value: book.updateDate },
                     ].map(({ label, value }) => (
-                        <Box
-                            key={label}
-                            sx={{
-                                border: '1px solid #ccc',
-                                borderRadius: 1,
-                                px: 2,
-                                py: 1,
-                                minWidth: 150,
-                                textAlign: 'right',
-                            }}
-                        >
+                        <Box key={label} sx={{ border: '1px solid #ccc', borderRadius: 1, px: 2, py: 1, minWidth: 150, textAlign: 'right' }}>
                             {label}: {value || '-'}
                         </Box>
                     ))}
