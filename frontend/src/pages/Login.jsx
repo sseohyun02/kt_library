@@ -26,7 +26,8 @@ export default function Login() {
         };
 
         try {
-            await login(dto);
+            // ⭐ 로그인 결과 받아오기
+            const result = await login(dto);
 
             // ✨ 로그인 정보 저장
             localStorage.setItem("loginUser", JSON.stringify(result));
