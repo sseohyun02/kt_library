@@ -1,31 +1,36 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import logo from "../assets/logo.png";
-import { mockBooks } from "../data/mockBooks";
+import { getBooks } from "../services/bookService";
 
-/**
- * 공통 레이아웃
- * - 상단 네비게이션(로고/탭/검색/로그인)
- * - 검색: 제목/저자 부분 일치 시 첫 도서 상세로 이동
- */
 export default function Layout({ children }) {
     const [query, setQuery] = useState("");
     const navigate = useNavigate();
 
-    const handleSearch = (e) => {
+    const handleSearch = async (e) => {
         e.preventDefault();
         const keyword = query.trim();
         if (!keyword) return;
+
         const lower = keyword.toLowerCase();
-        const target = mockBooks.find(
-            (b) =>
-                b.title.toLowerCase().includes(lower) ||
-                b.author.toLowerCase().includes(lower),
-        );
-        if (target) {
-            navigate(`/books/${target.id}`);
-        } else {
-            alert("검색 결과가 없습니다.");
+
+        try {
+            const books = await getBooks(); // 🔥 API에서 전체 도서 목록 불러오기
+
+            const target = books.find(
+                (b) =>
+                    b.title.toLowerCase().includes(lower) ||
+                    (b.author && b.author.toLowerCase().includes(lower))
+            );
+
+            if (target) {
+                navigate(`/books/${target.id}`);
+            } else {
+                alert("검색 결과가 없습니다.");
+            }
+        } catch (err) {
+            console.error("검색 중 오류 발생:", err);
+            alert("검색 중 오류가 발생했습니다.");
         }
     };
 
@@ -38,6 +43,7 @@ export default function Layout({ children }) {
                             <img src={logo} alt="로고" className="brand-logo" />
                         </div>
                     </Link>
+
                     <div className="nav-links">
                         <button className="nav-link active">내 서재</button>
                         <button className="nav-link">관리</button>
@@ -52,12 +58,10 @@ export default function Layout({ children }) {
                             value={query}
                             onChange={(e) => setQuery(e.target.value)}
                             placeholder="도서 검색"
-                            aria-label="도서 검색"
                         />
-                        <button type="submit" className="search-icon" aria-label="검색">
-                            &#128269;
-                        </button>
+                        <button type="submit" className="search-icon">&#128269;</button>
                     </form>
+
                     <Link to="/login" className="login-btn">
                         로그인
                     </Link>
