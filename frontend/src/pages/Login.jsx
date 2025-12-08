@@ -27,6 +27,10 @@ export default function Login() {
 
         try {
             await login(dto);
+
+            // ✨ 로그인 정보 저장
+            localStorage.setItem("loginUser", JSON.stringify(result));
+
             alert("로그인 성공!");
             navigate("/mypage");
         } catch (err) {

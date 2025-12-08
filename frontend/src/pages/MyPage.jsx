@@ -3,44 +3,54 @@ import { useEffect, useState } from "react";
 import { getBooks, deleteBook } from "../services/bookService";
 
 export default function MyPage() {
-    const user = {
-        userId: "user123",
-        name: "홍길동",
-        email: "hong@example.com"
-    };
+    // ⭐ 로그인한 사용자 정보 저장
+    const [user, setUser] = useState(null);
 
-    // ⭐ 내가 만든 책 목록 (백엔드에서 가져옴)
+    // ⭐ 내가 만든 책 목록
     const [myBooks, setMyBooks] = useState([]);
 
-    // ⭐ 페이지 로딩 시 API 호출
+    // 페이지 로딩 시 실행
     useEffect(() => {
+        // 1) 사용자 정보 불러오기
+        const savedUser = localStorage.getItem("loginUser");
+        if (savedUser) {
+            setUser(JSON.parse(savedUser));
+        }
+
+        // 2) 책 목록 불러오기
         loadMyBooks();
     }, []);
 
     const loadMyBooks = async () => {
         try {
             const data = await getBooks();
-            setMyBooks(data); // 전체 목록 로드
+            setMyBooks(data);
         } catch (error) {
             console.error("❌ 책 목록 불러오기 실패:", error);
         }
     };
 
-    // ⭐ 삭제 기능 (API 연동)
     const handleDelete = async (bookId) => {
         if (!window.confirm("정말 삭제하시겠습니까?")) return;
 
         try {
             await deleteBook(bookId);
             alert("도서가 삭제되었습니다!");
-
-            // 목록 다시 불러오기
             loadMyBooks();
         } catch (error) {
             console.error("❌ 책 삭제 실패:", error);
             alert("삭제 중 오류가 발생했습니다.");
         }
     };
+
+    // ⭐ user 정보가 로딩되기 전에는 빈 화면 방지
+    if (!user) {
+        return (
+            <div style={{ padding: "40px", textAlign: "center" }}>
+                로그인 정보 없음. 다시 로그인해주세요.
+            </div>
+        );
+    }
 
     return (
         <div
