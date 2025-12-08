@@ -6,8 +6,8 @@ export default function Login() {
     const navigate = useNavigate();
 
     const [formData, setFormData] = useState({
-        loginId: "",
-        password: "",
+        email: "",
+        password: ""
     });
 
     const handleChange = (e) => {
@@ -21,19 +21,17 @@ export default function Login() {
         e.preventDefault();
 
         const dto = {
-            loginId: formData.loginId,   // 이메일 ❌ → loginId 사용
+            email: formData.email,
             password: formData.password
         };
 
         try {
-            const result = await login(dto);
-            console.log("로그인 성공:", result.data);
-
+            await login(dto);
             alert("로그인 성공!");
-            navigate("/"); // 필요하면 마이페이지로 변경
+            navigate("/mypage");
         } catch (err) {
-            console.error("로그인 실패:", err);
-            alert(err.response?.data?.message || "로그인 중 오류가 발생했습니다.");
+            console.error(err);
+            alert(err.response?.data?.message || "로그인 실패");
         }
     };
 
@@ -44,13 +42,13 @@ export default function Login() {
 
                 <form className="login-form" onSubmit={handleSubmit}>
                     <label className="login-label">
-                        아이디
+                        이메일
                         <input
-                            type="text"
-                            name="loginId"
+                            type="email"
+                            name="email"
                             className="login-input"
-                            placeholder="아이디를 입력하세요"
-                            value={formData.loginId}
+                            placeholder="you@example.com"
+                            value={formData.email}
                             onChange={handleChange}
                             required
                         />
@@ -73,12 +71,7 @@ export default function Login() {
                         로그인
                     </button>
 
-                    <p style={{
-                        textAlign: "center",
-                        marginTop: "16px",
-                        fontSize: "14px",
-                        color: "#666"
-                    }}>
+                    <p style={{ textAlign: "center", marginTop: "16px", fontSize: "14px", color: "#666" }}>
                         아직 회원이 아니신가요?{" "}
                         <Link to="/signup" style={{ color: "#4285f4", textDecoration: "none", fontWeight: "500" }}>
                             회원가입
