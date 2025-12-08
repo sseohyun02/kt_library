@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import {
     TextField,
     Button,
@@ -13,30 +13,28 @@ import {
 
 import { createBook, getBook, updateBook } from "../services/bookService";
 
-export default function BookForm() {
-    const { id } = useParams();              // /books/edit/:id 들어왔을 때만 존재
+export default function BookCreate() {
+    const { id } = useParams();
     const navigate = useNavigate();
-    const isEditMode = !!id;                 // id가 있으면 수정 모드
+    const isEditMode = !!id;
 
     // ------------------------------
     // 📌 폼 상태
     // ------------------------------
     const [formData, setFormData] = useState({
-        title: "",
-        author: "",
-        language: "",
-        genre: "",
-        content: ""
+        title: '',
+        language: '',
+        genre: '',
+        content: '',
+        introduction: '',
+        author: ''
     });
 
-    // ------------------------------
-    // 📌 표지 이미지 상태
-    // ------------------------------
     const [coverImage, setCoverImage] = useState(null);
     const [isGenerating, setIsGenerating] = useState(false);
 
     // ------------------------------
-    // 📌 수정 모드일 때 기존 데이터 로드
+    // 📌 수정 모드 → 기존 데이터 로드
     // ------------------------------
     useEffect(() => {
         if (!isEditMode) return;
@@ -50,15 +48,15 @@ export default function BookForm() {
                     author: book.author || "",
                     language: book.language || "",
                     genre: book.genre || "",
+                    introduction: book.introduction || "",
                     content: book.content || ""
                 });
 
-                // 커버이미지는 백엔드가 없으니 일단 빈값 처리
                 setCoverImage(book.coverImage || null);
 
             } catch (error) {
-                console.error("❌ 책 불러오기 실패:", error);
                 alert("책 정보를 불러오지 못했습니다.");
+                console.error(error);
             }
         };
 
@@ -66,13 +64,10 @@ export default function BookForm() {
     }, [id, isEditMode]);
 
     // ------------------------------
-    // 입력값 변경 처리
+    // 폼 입력 변경
     // ------------------------------
     const handleChange = (e) => {
-        setFormData({
-            ...formData,
-            [e.target.name]: e.target.value
-        });
+        setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
     // ------------------------------
@@ -82,7 +77,7 @@ export default function BookForm() {
         setIsGenerating(true);
         setTimeout(() => {
             setCoverImage(
-                "https://via.placeholder.com/300x400/4A90E2/ffffff?text=AI+Generated+Cover"
+                "https://via.placeholder.com/480x675/4A90E2/ffffff?text=AI+Generated+Cover"
             );
             setIsGenerating(false);
             alert("표지가 생성되었습니다!");
@@ -90,7 +85,7 @@ export default function BookForm() {
     };
 
     // ------------------------------
-    // 등록 / 수정 공통 처리
+    // 등록 / 수정 처리
     // ------------------------------
     const handleSubmit = async () => {
         if (!coverImage) {
@@ -101,23 +96,23 @@ export default function BookForm() {
         const dto = {
             title: formData.title,
             author: formData.author,
+            content: formData.content,
+            introduction: formData.introduction,
             language: formData.language || "KO",
             genre: formData.genre || "NOVEL",
-            content: formData.content
+            coverImage: coverImage
         };
 
         try {
             if (isEditMode) {
-                // ✏ 수정 요청
                 await updateBook(id, dto);
                 alert("도서가 수정되었습니다!");
             } else {
-                // ➕ 등록 요청
                 await createBook(dto);
                 alert("도서가 등록되었습니다!");
             }
 
-            navigate("/books");  // 완료 후 목록으로 이동
+            navigate("/mypage");
 
         } catch (error) {
             console.error(error);
@@ -126,15 +121,9 @@ export default function BookForm() {
     };
 
     return (
-        <Box
-            sx={{
-                minHeight: "100vh",
-                bgcolor: "#f8f9fa",
-                py: 6,
-                px: 2
-            }}
-        >
+        <Box sx={{ minHeight: "100vh", bgcolor: "#f8f9fa", py: 6, px: 2 }}>
             <Box sx={{ maxWidth: 1100, mx: "auto" }}>
+
                 <Typography
                     variant="h4"
                     sx={{
@@ -157,13 +146,13 @@ export default function BookForm() {
                         mb: 5
                     }}
                 >
-                    {/* 왼쪽 - 표지 미리보기 */}
+                    {/* 왼쪽: 표지 미리보기 */}
                     <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 3 }}>
                         <Paper
                             elevation={0}
                             sx={{
-                                width: 320,
-                                height: 450,
+                                width: 480,
+                                height: 675,
                                 bgcolor: "#e9ecef",
                                 display: "flex",
                                 alignItems: "center",
@@ -200,7 +189,7 @@ export default function BookForm() {
                         </Button>
                     </Box>
 
-                    {/* 오른쪽 - 입력 폼 */}
+                    {/* 오른쪽 폼 */}
                     <Paper
                         elevation={0}
                         sx={{
@@ -215,61 +204,93 @@ export default function BookForm() {
 
                             {/* 제목 */}
                             <Box>
-                                <Typography sx={{ mb: 1.5, fontWeight: 600 }}>1. 제목</Typography>
+                                <Typography sx={labelText}>1. 제목</Typography>
                                 <TextField
                                     fullWidth
                                     name="title"
                                     value={formData.title}
                                     onChange={handleChange}
                                     size="small"
+                                    sx={inputStyle}
                                 />
                             </Box>
 
                             {/* 저자 */}
                             <Box>
-                                <Typography sx={{ mb: 1.5, fontWeight: 600 }}>2. 저자</Typography>
+                                <Typography sx={labelText}>2. 저자</Typography>
                                 <TextField
                                     fullWidth
                                     name="author"
                                     value={formData.author}
                                     onChange={handleChange}
                                     size="small"
+                                    sx={inputStyle}
                                 />
                             </Box>
 
                             {/* 언어 */}
                             <Box>
-                                <Typography sx={{ mb: 1.5, fontWeight: 600 }}>3. 언어</Typography>
+                                <Typography sx={labelText}>3. 언어</Typography>
                                 <FormControl fullWidth size="small">
                                     <Select
                                         name="language"
                                         value={formData.language}
                                         onChange={handleChange}
                                         displayEmpty
+                                        sx={selectStyle}
                                     >
                                         <MenuItem value="" disabled>언어 선택</MenuItem>
                                         <MenuItem value="KO">한국어</MenuItem>
                                         <MenuItem value="EN">영어</MenuItem>
-                                        <MenuItem value="JP">일본어</MenuItem>
                                     </Select>
                                 </FormControl>
                             </Box>
 
                             {/* 장르 */}
                             <Box>
-                                <Typography sx={{ mb: 1.5, fontWeight: 600 }}>4. 장르</Typography>
+                                <Typography sx={labelText}>4. 장르</Typography>
+                                <FormControl fullWidth size="small">
+                                    <Select
+                                        name="genre"
+                                        value={formData.genre}
+                                        onChange={handleChange}
+                                        displayEmpty
+                                        sx={selectStyle}
+                                    >
+                                        <MenuItem value="" disabled>장르 선택</MenuItem>
+                                        <MenuItem value="SF">SF</MenuItem>
+                                        <MenuItem value="로맨스">로맨스</MenuItem>
+                                        <MenuItem value="공포">공포</MenuItem>
+                                        <MenuItem value="추리">추리</MenuItem>
+                                        <MenuItem value="개그">개그</MenuItem>
+                                    </Select>
+                                </FormControl>
+                            </Box>
+
+                            {/* 소개글 */}
+                            <Box>
+                                <Typography sx={labelText}>5. 소개글 (200자 이내)</Typography>
                                 <TextField
                                     fullWidth
-                                    name="genre"
-                                    value={formData.genre}
+                                    name="introduction"
+                                    value={formData.introduction}
                                     onChange={handleChange}
-                                    size="small"
+                                    multiline
+                                    rows={4}
+                                    inputProps={{ maxLength: 200 }}
+                                    sx={inputStyle}
                                 />
+                                <Typography
+                                    variant="caption"
+                                    sx={{ display: "block", textAlign: "right", mt: 0.5, mr: 0.5, color: "#868e96" }}
+                                >
+                                    {`${formData.introduction.length} / 200`}
+                                </Typography>
                             </Box>
 
                             {/* 내용 */}
                             <Box>
-                                <Typography sx={{ mb: 1.5, fontWeight: 600 }}>5. 내용</Typography>
+                                <Typography sx={labelText}>6. 내용</Typography>
                                 <TextField
                                     fullWidth
                                     name="content"
@@ -277,8 +298,10 @@ export default function BookForm() {
                                     onChange={handleChange}
                                     multiline
                                     rows={6}
+                                    sx={inputStyle}
                                 />
                             </Box>
+
                         </Box>
                     </Paper>
                 </Box>
@@ -306,3 +329,27 @@ export default function BookForm() {
         </Box>
     );
 }
+
+// ----------------------
+// 🔧 스타일 변수
+// ----------------------
+const labelText = {
+    mb: 1.5,
+    fontWeight: 600,
+    fontSize: "15px",
+    color: "#495057"
+};
+
+const inputStyle = {
+    "& .MuiOutlinedInput-root": {
+        bgcolor: "#f1f3f5",
+        borderRadius: 1.5,
+        "& fieldset": { border: "none" }
+    }
+};
+
+const selectStyle = {
+    bgcolor: "#f1f3f5",
+    borderRadius: 1.5,
+    "& fieldset": { border: "none" }
+};
