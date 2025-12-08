@@ -79,4 +79,8 @@ public class Book {
     public void onUpdate() {
         this.updateDate = LocalDateTime.now();
     }
+
+    // 좋아요 수
+    @Column(name = "LIKE_COUNT", nullable = false)
+    private int likeCount = 0;
 }

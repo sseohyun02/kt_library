@@ -81,6 +81,7 @@ public class BookServiceImpl implements BookService {
                 book.getId(),
                 book.getTitle(),
                 book.getContent(),
+                book.getAuthor(),
                 book.getLanguage(),
                 book.getGenre(),
                 book.getCreateDate(),
