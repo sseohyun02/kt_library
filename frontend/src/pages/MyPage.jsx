@@ -3,21 +3,16 @@ import { useEffect, useState } from "react";
 import { getBooks, deleteBook } from "../services/bookService";
 
 export default function MyPage() {
-    // ⭐ 로그인한 사용자 정보 저장
-    const [user, setUser] = useState(null);
-
-    // ⭐ 내가 만든 책 목록
+    const [user, setUser] = useState(null);   // ⭐ 로그인 유저 상태
     const [myBooks, setMyBooks] = useState([]);
 
-    // 페이지 로딩 시 실행
     useEffect(() => {
-        // 1) 사용자 정보 불러오기
-        const savedUser = localStorage.getItem("loginUser");
-        if (savedUser) {
-            setUser(JSON.parse(savedUser));
+        // ⭐ 로그인한 사용자 정보 불러오기
+        const storedUser = localStorage.getItem("loginUser");
+        if (storedUser) {
+            setUser(JSON.parse(storedUser));
         }
 
-        // 2) 책 목록 불러오기
         loadMyBooks();
     }, []);
 
@@ -43,91 +38,38 @@ export default function MyPage() {
         }
     };
 
-    // ⭐ user 정보가 로딩되기 전에는 빈 화면 방지
+    // ⭐ 로그인 정보가 없으면 로딩 또는 안내 메시지
     if (!user) {
-        return (
-            <div style={{ padding: "40px", textAlign: "center" }}>
-                로그인 정보 없음. 다시 로그인해주세요.
-            </div>
-        );
+        return <div style={{ padding: "40px" }}>로그인이 필요합니다.</div>;
     }
 
     return (
-        <div
-            style={{
-                minHeight: "100vh",
-                background: "#f8f9fa",
-                padding: "40px 20px"
-            }}
-        >
-            <div
-                style={{
-                    maxWidth: "1200px",
-                    margin: "0 auto",
-                    display: "flex",
-                    gap: "30px"
-                }}
-            >
-                {/* 왼쪽: 회원 정보 */}
-                <div
-                    style={{
-                        flex: "0 0 350px",
-                        background: "#fff",
-                        borderRadius: "12px",
-                        padding: "30px",
-                        height: "fit-content",
-                        border: "1px solid #dee2e6"
-                    }}
-                >
-                    <h2
-                        style={{
-                            fontSize: "24px",
-                            fontWeight: "700",
-                            marginBottom: "24px",
-                            color: "#212529"
-                        }}
-                    >
-                        회원 정보
-                    </h2>
+        <div style={{ minHeight: "100vh", background: "#f8f9fa", padding: "40px 20px" }}>
+            <div style={{ maxWidth: "1200px", margin: "0 auto", display: "flex", gap: "30px" }}>
 
-                    <div
-                        style={{ display: "flex", flexDirection: "column", gap: "16px" }}
-                    >
+                {/* ⭐ 왼쪽: 로그인한 사용자 정보 표시 */}
+                <div style={{
+                    flex: "0 0 350px",
+                    background: "#fff",
+                    borderRadius: "12px",
+                    padding: "30px",
+                    height: "fit-content",
+                    border: "1px solid #dee2e6"
+                }}>
+                    <h2 style={{ fontSize: "24px", fontWeight: "700", marginBottom: "24px" }}>회원 정보</h2>
+
+                    <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
                         <div style={{ display: "flex", gap: "12px" }}>
-                            <span
-                                style={{
-                                    fontWeight: "600",
-                                    color: "#495057",
-                                    width: "80px"
-                                }}
-                            >
-                                이름:
-                            </span>
-                            <span style={{ color: "#212529" }}>{user.name}</span>
+                            <span style={{ fontWeight: "600", width: "80px" }}>이름:</span>
+                            <span>{user.name}</span>
                         </div>
                         <div style={{ display: "flex", gap: "12px" }}>
-                            <span
-                                style={{
-                                    fontWeight: "600",
-                                    color: "#495057",
-                                    width: "80px"
-                                }}
-                            >
-                                아이디:
-                            </span>
-                            <span style={{ color: "#212529" }}>{user.userId}</span>
+                            <span style={{ fontWeight: "600", width: "80px" }}>아이디:</span>
+                            <span>{user.loginId}</span>
                         </div>
                         <div style={{ display: "flex", gap: "12px" }}>
-                            <span
-                                style={{
-                                    fontWeight: "600",
-                                    color: "#495057",
-                                    width: "80px"
-                                }}
-                            >
-                                이메일:
-                            </span>
-                            <span style={{ color: "#212529" }}>{user.email}</span>
+                            <span style={{ fontWeight: "600", width: "80px" }}>이메일:</span>
+                            <span>{user.email}</span>
                         </div>
                     </div>
                 </div>

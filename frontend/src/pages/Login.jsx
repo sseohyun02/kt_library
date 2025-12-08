@@ -27,10 +27,10 @@ export default function Login() {
 
         try {
             // ⭐ 로그인 결과 받아오기
-            const result = await login(dto);
+            const res = await login(dto);
 
             // ✨ 로그인 정보 저장
-            localStorage.setItem("loginUser", JSON.stringify(result));
+            localStorage.setItem("loginUser", JSON.stringify(res.data));
 
             alert("로그인 성공!");
             navigate("/mypage");
