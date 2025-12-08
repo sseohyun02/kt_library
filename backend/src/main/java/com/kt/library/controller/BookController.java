@@ -16,34 +16,26 @@ public class BookController {
 
     private final BookService bookService;
 
-    // 전체 책 조회
     @GetMapping
     public List<BookResponse> getBooks() {
         return bookService.getAllBooks();
     }
 
-    // 상세 조회
     @GetMapping("/{bookId}")
     public BookResponse getBook(@PathVariable Long bookId) {
         return bookService.getBook(bookId);
     }
 
-    // 책 등록
     @PostMapping
     public BookResponse createBook(@RequestBody BookCreateRequest request) {
         return bookService.createBook(request);
     }
 
-    // 책 수정
     @PutMapping("/{bookId}")
-    public BookResponse updateBook(
-            @PathVariable Long bookId,
-            @RequestBody BookUpdateRequest request
-    ) {
+    public BookResponse updateBook(@PathVariable Long bookId, @RequestBody BookUpdateRequest request) {
         return bookService.updateBook(bookId, request);
     }
 
-    // 책 삭제
     @DeleteMapping("/{bookId}")
     public void deleteBook(@PathVariable Long bookId) {
         bookService.deleteBook(bookId);

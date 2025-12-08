@@ -7,8 +7,10 @@ import lombok.Setter;
 @Getter
 @Setter
 public class BookUpdateRequest {
+
     private String title;
     private String content;
+    private String author;  // 추가됨
     private Book.Language language;
     private Book.Genre genre;
 }

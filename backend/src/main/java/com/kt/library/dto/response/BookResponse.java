@@ -11,9 +11,11 @@ import java.time.LocalDateTime;
 @Setter
 @AllArgsConstructor
 public class BookResponse {
+
     private Long id;
     private String title;
     private String content;
+    private String author;
     private Book.Language language;
     private Book.Genre genre;
     private LocalDateTime createDate;

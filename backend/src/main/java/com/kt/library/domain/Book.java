@@ -41,6 +41,10 @@ public class Book {
     @Column(name = "CONTENT", nullable = false, columnDefinition = "TEXT")
     private String content;
 
+    // 작가 (NOT NULL)
+    @Column(name = "AUTHOR", nullable = false, length = 255)
+    private String author;
+
     // 언어
     @Enumerated(EnumType.STRING)
     private Language language;
@@ -75,8 +79,4 @@ public class Book {
     public void onUpdate() {
         this.updateDate = LocalDateTime.now();
     }
-
-    // 좋아요 개수 저장용 필드
-    @Column(name = "LIKE_COUNT")
-    private int likeCount = 0;
 }
