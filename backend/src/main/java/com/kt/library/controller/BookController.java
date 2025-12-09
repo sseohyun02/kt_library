@@ -49,4 +49,16 @@ public class BookController {
     public void deleteBook(@PathVariable Long bookId) {
         bookService.deleteBook(bookId);
     }
+
+    @GetMapping("/my")
+    public List<BookResponse> getMyBooks(
+            @SessionAttribute(name = "loginUser", required = false) UserResponse loginUser
+    ) {
+        if (loginUser == null) {
+            throw new UnAuthorizedException("로그인이 필요합니다.");
+        }
+
+        return bookService.getBooksByUserId(loginUser.getId());
+    }
+
 }

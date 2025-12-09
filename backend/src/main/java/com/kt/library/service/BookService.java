@@ -27,4 +27,7 @@ public interface BookService {
     // 책 삭제
     @Transactional
     void deleteBook(Long id);
+
+    // 내 책 불러오기
+    List<BookResponse> getBooksByUserId(Long userId);
 }

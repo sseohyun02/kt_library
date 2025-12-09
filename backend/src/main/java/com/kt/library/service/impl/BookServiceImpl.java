@@ -84,6 +84,16 @@ public class BookServiceImpl implements BookService {
         bookRepository.delete(book);
     }
 
+    // 내 책 불러오기
+    @Override
+    public List<BookResponse> getBooksByUserId(Long userId) {
+        List<Book> books = bookRepository.findByUserId(userId);
+        return books.stream()
+                .map(BookResponse::fromEntity)
+                .toList();
+    }
+
+
     // Entity → Response DTO 변환 공통 메서드
     private BookResponse toResponse(Book book) {
         return new BookResponse(
