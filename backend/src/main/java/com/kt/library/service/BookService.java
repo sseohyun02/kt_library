@@ -31,4 +31,5 @@ public interface BookService {
     // 책 표지 이미지 URL 업데이트 기능
     void updateCoverImage(Long bookId, String coverImageUrl);
 
+    String generateAiCover(Long bookId, String prompt);
 }

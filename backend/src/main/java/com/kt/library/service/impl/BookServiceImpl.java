@@ -8,6 +8,7 @@ import com.kt.library.dto.response.BookResponse;
 import com.kt.library.repository.BookRepository;
 import com.kt.library.repository.UserRepository;
 import com.kt.library.service.BookService;
+import com.kt.library.service.OpenAiImageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +21,7 @@ public class BookServiceImpl implements BookService {
 
     private final BookRepository bookRepository;
     private final UserRepository userRepository;
+    private final OpenAiImageService openAiImageService;
 
     // 생성
     @Override
@@ -112,4 +114,23 @@ public class BookServiceImpl implements BookService {
                 book.getCoverImageUrl()
         );
     }
+
+    @Override
+    public String generateAiCover(Long bookId, String prompt) {
+
+        // 1) 책 조회
+        Book book = bookRepository.findById(bookId)
+                .orElseThrow(() -> new RuntimeException("해당 책을 찾을 수 없습니다."));
+
+        // 2) AI로 이미지 생성
+        String imageUrl = openAiImageService.generateImage(prompt);
+
+        // 3) 책 엔티티에 이미지 URL 저장
+        book.setCoverImageUrl(imageUrl);
+        bookRepository.save(book);
+
+        // 4) 생성된 URL 반환
+        return imageUrl;
+    }
+
 }

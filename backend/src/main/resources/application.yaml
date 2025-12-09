@@ -9,3 +9,8 @@ spring:
       allowed-origins: "http://localhost:5173"  # ← CORS 설정 추가
       allowed-methods: "*"
       allowed-headers: "*"
+
+openai:
+  api:
+    key:
+

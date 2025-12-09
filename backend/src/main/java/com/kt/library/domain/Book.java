@@ -85,6 +85,6 @@ public class Book {
     private int likeCount = 0;
 
     // OpenAI로 생성한 이미지 URL 저장
-    @Column(name = "COVER_IMAGE_URL")
+    @Column(name = "COVER_IMAGE_URL", columnDefinition = "TEXT")
     private String coverImageUrl;
 }
