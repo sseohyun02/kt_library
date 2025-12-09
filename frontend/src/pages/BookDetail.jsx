@@ -5,18 +5,28 @@ import FavoriteIcon from "@mui/icons-material/Favorite";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import ThumbUpIcon from "@mui/icons-material/ThumbUp";
 import ThumbUpOffAltIcon from "@mui/icons-material/ThumbUpOffAlt";
+
 import { getBook } from "../services/bookService";
+import { toggleLike } from "../services/likeService";
+import { toggleFavorite, getFavoriteCount } from "../services/favoriteService";
+import { getComments, createComment, deleteComment } from "../services/commentService";
 
 export default function BookDetail() {
     const { id } = useParams();
+
     const [book, setBook] = useState(null);
     const [liked, setLiked] = useState(false);
     const [saved, setSaved] = useState(false);
+    const [favoriteCount, setFavoriteCount] = useState(0);
+
     const [comment, setComment] = useState("");
     const [comments, setComments] = useState([]);
 
+    // 초기 로딩
     useEffect(() => {
-        getBook(id).then(setBook).catch(console.error);
+        getBook(id).then(setBook);
+        getComments(id).then(setComments);
+        getFavoriteCount(id).then(setFavoriteCount);
     }, [id]);
 
     if (!book) return <p>Loading...</p>;
@@ -59,13 +69,13 @@ export default function BookDetail() {
                     )}
                 </Box>
 
-                {/* 상세정보 */}
+                {/* 상세 정보 */}
                 <Box sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', gap: 2 }}>
                     <Box sx={{ border: '1px solid #ccc', borderRadius: 1, p: 2, fontSize: '1.8rem', fontWeight: 'bold' }}>
                         {book.title}
                     </Box>
 
-                    {/* 정보 그리드 */}
+                    {/* 정보 */}
                     <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 2 }}>
                         {[
                             { label: '저자', value: book.author },
@@ -84,37 +94,41 @@ export default function BookDetail() {
                         {book.content || '줄거리 정보가 없습니다.'}
                     </Box>
 
-                    {/* 등록/수정일 */}
-                    <Box sx={{ display: 'flex', gap: 2 }}>
-                        {[
-                            { label: '등록일', value: book.createDate },
-                            { label: '최종 수정일', value: book.updateDate },
-                        ].map(({ label, value }) => (
-                            <Box key={label} sx={{ border: '1px solid #ccc', borderRadius: 1, p: 1, minWidth: 150, textAlign: 'right' }}>
-                                {label}: {value || '-'}
-                            </Box>
-                        ))}
-                    </Box>
-
                     {/* 좋아요 + 찜 버튼 */}
                     <Box sx={{ display: 'flex', gap: 2, mt: 2 }}>
-                        <IconButton onClick={() => setLiked(!liked)} color="primary">
+                        {/* 좋아요 */}
+                        <IconButton
+                            onClick={() =>
+                                toggleLike(id).then(() => setLiked(!liked))
+                            }
+                            color="primary"
+                        >
                             {liked ? <ThumbUpIcon /> : <ThumbUpOffAltIcon />}
                         </IconButton>
-                        <IconButton onClick={() => setSaved(!saved)} color="error">
+
+                        {/* 즐겨찾기 */}
+                        <IconButton
+                            onClick={() =>
+                                toggleFavorite(id).then(() =>
+                                    getFavoriteCount(id).then(setFavoriteCount)
+                                )
+                            }
+                            color="error"
+                        >
                             {saved ? <FavoriteIcon /> : <FavoriteBorderIcon />}
                         </IconButton>
+
+                        <Typography>찜 수: {favoriteCount}</Typography>
                     </Box>
                 </Box>
             </Box>
 
-            {/* 댓글 입력창 */}
+            {/* 댓글 입력 */}
             <Box sx={{ mt: 4 }}>
                 <Typography variant="h6" gutterBottom>
                     댓글
                 </Typography>
 
-                {/* 입력창 + 버튼 */}
                 <Box sx={{ display: 'flex', gap: 1, mb: 2 }}>
                     <TextField
                         fullWidth
@@ -127,8 +141,12 @@ export default function BookDetail() {
                         variant="contained"
                         onClick={() => {
                             if (comment.trim() === "") return;
-                            setComments([...comments, comment]);
-                            setComment("");
+
+                            createComment(id, { content: comment })
+                                .then(() => {
+                                    setComment("");
+                                    getComments(id).then(setComments);
+                                });
                         }}
                     >
                         작성
@@ -137,9 +155,22 @@ export default function BookDetail() {
 
                 {/* 댓글 목록 */}
                 <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-                    {comments.map((c, idx) => (
-                        <Box key={idx} sx={{ p: 1, border: '1px solid #ccc', borderRadius: 1 }}>
-                            {c}
+                    {comments.map((c) => (
+                        <Box key={c.id} sx={{ p: 1, border: '1px solid #ccc', borderRadius: 1 }}>
+                            <strong>{c.writerName}</strong>
+                            <p>{c.content}</p>
+
+                            <Button
+                                size="small"
+                                color="error"
+                                onClick={() =>
+                                    deleteComment(c.id).then(() =>
+                                        getComments(id).then(setComments)
+                                    )
+                                }
+                            >
+                                삭제
+                            </Button>
                         </Box>
                     ))}
                 </Box>
