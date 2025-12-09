@@ -6,5 +6,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class BookAiImageRequest {
-    private String prompt;  // AI에게 생성 요청할 이미지 설명
+//    private String prompt;  // AI에게 생성 요청할 이미지 설명
+    private String prompt;
+    private String apiKey;
 }

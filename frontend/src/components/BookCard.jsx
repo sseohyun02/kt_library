@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 
-export default function BookCard({ id, title, author, image, rank }) {
-    const hasImage = Boolean(image);
+export default function BookCard({ id, title, author, coverImageUrl, rank }) {
+    const hasImage = Boolean(coverImageUrl);
     const clickable = id !== null && id !== undefined;
 
     const card = (
@@ -10,7 +10,7 @@ export default function BookCard({ id, title, author, image, rank }) {
 
             <div className="book-cover-wrap">
                 {hasImage ? (
-                    <img src={image} alt={title} className="book-cover" loading="lazy" />
+                    <img src={coverImageUrl} alt={title} className="book-cover" loading="lazy" />
                 ) : (
                     <div className="book-cover placeholder">이미지 없음</div>
                 )}

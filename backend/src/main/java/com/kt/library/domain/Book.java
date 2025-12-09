@@ -32,10 +32,10 @@ public class Book {
     @Column(name = "TITLE", nullable = false, length = 255)
     private String title;
 
-    // 표지
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "IMAGE_ID")
-    private Image image;
+//    // 표지
+//    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+//    @JoinColumn(name = "IMAGE_ID")
+//    private Image image;
 
     // 내용 (NOT NULL, 길이가 길 수 있으니 TEXT로 설정)
     @Column(name = "CONTENT", nullable = false, columnDefinition = "TEXT")

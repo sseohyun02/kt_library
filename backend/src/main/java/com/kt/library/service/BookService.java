@@ -31,8 +31,8 @@ public interface BookService {
     // 내 책 불러오기
     List<BookResponse> getBooksByUserId(Long userId);
 
+    // 표지 이미지 생성
+    String generateAiCover(String prompt, String apiKey);
     // 책 표지 이미지 URL 업데이트 기능
     void updateCoverImage(Long bookId, String coverImageUrl);
-
-    String generateAiCover(Long bookId, String prompt);
 }

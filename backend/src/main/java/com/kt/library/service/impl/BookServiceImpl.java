@@ -95,7 +95,7 @@ public class BookServiceImpl implements BookService {
                 .toList();
     }
 
-
+    // 표지 이미지 업데이트
     @Override
     public void updateCoverImage(Long bookId, String coverImageUrl) {
 
@@ -108,6 +108,14 @@ public class BookServiceImpl implements BookService {
 
         // 업데이트된 책 정보를 DB에 저장
         bookRepository.save(book);
+    }
+
+    // 표지 이미지 생성
+    @Override
+    public String generateAiCover(String prompt, String apiKey) {
+        // 1) OpenAI로 이미지 생성 (DB는 건드리지 않음)
+        String imageUrl = openAiImageService.generateImage(prompt, apiKey);
+        return imageUrl;
     }
 
     // Entity → Response DTO 변환 공통 메서드
@@ -123,24 +131,6 @@ public class BookServiceImpl implements BookService {
                 book.getUpdateDate(),
                 book.getCoverImageUrl()
         );
-    }
-
-    @Override
-    public String generateAiCover(Long bookId, String prompt) {
-
-        // 1) 책 조회
-        Book book = bookRepository.findById(bookId)
-                .orElseThrow(() -> new RuntimeException("해당 책을 찾을 수 없습니다."));
-
-        // 2) AI로 이미지 생성
-        String imageUrl = openAiImageService.generateImage(prompt);
-
-        // 3) 책 엔티티에 이미지 URL 저장
-        book.setCoverImageUrl(imageUrl);
-        bookRepository.save(book);
-
-        // 4) 생성된 URL 반환
-        return imageUrl;
     }
 
 }

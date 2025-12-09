@@ -93,9 +93,9 @@ export default function BookDetail() {
                         overflow: "hidden",
                     }}
                 >
-                    {book.image ? (
+                    {book.coverImageUrl ? (
                         <img
-                            src={book.image.imageUrl}
+                            src={book.coverImageUrl}
                             alt={book.title}
                             style={{ width: "100%", height: "100%", objectFit: "cover" }}
                         />

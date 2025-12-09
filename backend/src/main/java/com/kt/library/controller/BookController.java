@@ -10,6 +10,9 @@ import com.kt.library.service.BookService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import com.kt.library.dto.request.BookAiImageRequest;
+import org.springframework.http.ResponseEntity;
+
 import java.util.List;
 import java.util.Map;
 
@@ -70,24 +73,39 @@ public class BookController {
         return bookService.getBooksByUserId(loginUser.getId());
     }
 
-    // (기존 기능) 프론트에서 URL 받아서 저장하는 API
+    // 프론트에서 URL 받아서 저장하는 API
     @PutMapping("/ai-image")
     public void updateAiImage(@RequestBody BookCoverUrlRequest request) {
         bookService.updateCoverImage(request.getBookId(), request.getCoverImageUrl());
     }
 
-    // (새 기능) 백엔드가 직접 AI로 이미지 생성하는 API
-    @PostMapping("/{bookId}/generate-cover")
-    public BookResponse generateAiCover(
-            @PathVariable Long bookId,
-            @RequestBody Map<String, String> requestBody
+    // AI 표지 생성: 프론트에서 prompt + apiKey를 보내면 백엔드가 OpenAI 호출
+    @PostMapping("/ai-cover")
+    public ResponseEntity<String> generateAiCover(
+            @RequestBody BookAiImageRequest request
     ) {
-        String prompt = requestBody.get("prompt");
+        String imageUrl = bookService.generateAiCover(
+                request.getPrompt(),
+                request.getApiKey()
+        );
 
-        // AI 생성 + 저장
-        bookService.generateAiCover(bookId, prompt);
-
-        // 저장 후 최신 데이터 반환
-        return bookService.getBook(bookId);
+        return ResponseEntity.ok(imageUrl);
     }
 }
+
+
+//    // (새 기능) 백엔드가 직접 AI로 이미지 생성하는 API
+//    @PostMapping("/{bookId}/generate-cover")
+//    public BookResponse generateAiCover(
+//            @PathVariable Long bookId,
+//            @RequestBody Map<String, String> requestBody
+//    ) {
+//        String prompt = requestBody.get("prompt");
+//
+//        // AI 생성 + 저장
+//        bookService.generateAiCover(bookId, prompt);
+//
+//        // 저장 후 최신 데이터 반환
+//        return bookService.getBook(bookId);
+//    }
+//}

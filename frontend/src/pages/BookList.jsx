@@ -15,7 +15,7 @@ export default function BookList() {
     const [books, setBooks] = useState([]);
     const [searchTerm, setSearchTerm] = useState("");
 
-    // 📌 API에서 목록 불러오기
+    // API에서 목록 불러오기
     const loadBooks = async () => {
         try {
             const data = await getBooks();
@@ -25,19 +25,19 @@ export default function BookList() {
         }
     };
 
-    // 📌 첫 로딩 시 전체 목록 가져오기
+    // 첫 로딩 시 전체 목록 가져오기
     useEffect(() => {
         loadBooks();
     }, []);
 
-    // 📌 검색어 적용된 결과 필터링
+    // 검색어 적용된 결과 필터링
     const filteredBooks = books.filter(
         (book) =>
             book.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
             book.author.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
-    // 📌 삭제 기능 (API + UI 반영)
+    // 삭제 기능 (API + UI 반영)
     const handleDelete = async (id) => {
         try {
             await deleteBook(id);
@@ -66,6 +66,7 @@ export default function BookList() {
                     <TableHead>
                         <TableRow>
                             <TableCell>ID</TableCell>
+                            <TableCell>표지</TableCell>
                             <TableCell>제목</TableCell>
                             <TableCell>저자</TableCell>
                             <TableCell>삭제</TableCell>
@@ -83,6 +84,21 @@ export default function BookList() {
                             filteredBooks.map((book) => (
                                 <TableRow key={book.id}>
                                     <TableCell>{book.id}</TableCell>
+
+                                    <TableCell>
+                                        {book.coverImageUrl ? (
+                                            <img
+                                                src={book.coverImageUrl}
+                                                alt={`${book.title} 표지`}
+                                                style={{ width: 50, height: 75, objectFit: 'cover' }}
+                                            />
+                                        ) : (
+                                            <Box sx={{ width: 50, height: 75, bgcolor: '#e9ecef', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '10px' }}>
+                                                No Img
+                                            </Box>
+                                        )}
+                                    </TableCell>
+
                                     <TableCell>{book.title}</TableCell>
                                     <TableCell>{book.author}</TableCell>
 

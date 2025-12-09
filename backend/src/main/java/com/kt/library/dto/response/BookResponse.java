@@ -11,7 +11,6 @@ import java.time.LocalDateTime;
 @Setter
 @AllArgsConstructor
 public class BookResponse {
-
     private Long id;
     private String title;
     private String content;
@@ -20,8 +19,9 @@ public class BookResponse {
     private Book.Genre genre;
     private LocalDateTime createDate;
     private LocalDateTime updateDate;
+    private String coverImageUrl;
 
-    // ★ 엔티티 → DTO 변환 메서드
+    // 엔티티 → DTO 변환 메서드
     public static BookResponse fromEntity(Book book) {
         return new BookResponse(
                 book.getId(),
@@ -35,7 +35,4 @@ public class BookResponse {
                 book.getCoverImageUrl()
         );
     }
-
-    // AI가 생성한 표지 이미지 URL
-    private String coverImageUrl;
 }

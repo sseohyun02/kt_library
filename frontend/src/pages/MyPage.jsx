@@ -18,7 +18,7 @@ export default function MyPage() {
         loadFavorites();
     }, []);
 
-    // 🔥 내가 만든 책만 가져오기
+    // 내가 만든 책만 가져오기
     const loadMyBooks = async () => {
         try {
             const data = await getMyBooks();
@@ -28,7 +28,7 @@ export default function MyPage() {
         }
     };
 
-    // ❤️ 찜 목록 가져오기
+    // 찜 목록 가져오기
     const loadFavorites = async () => {
         try {
             const data = await getFavorites();
@@ -38,7 +38,7 @@ export default function MyPage() {
         }
     };
 
-    // ❌ 책 삭제
+    // 책 삭제
     const handleDelete = async (bookId) => {
         if (!window.confirm("정말 삭제하시겠습니까?")) return;
 
@@ -52,7 +52,7 @@ export default function MyPage() {
         }
     };
 
-    // 💔 찜 해제
+    // 찜 해제
     const handleToggleFavorite = async (bookId) => {
         try {
             await toggleFavorite(bookId);
@@ -132,20 +132,30 @@ export default function MyPage() {
                                         borderRadius: "8px",
                                         border: "1px solid #e9ecef"
                                     }}>
-                                        <div style={{
-                                            width: "50px",
-                                            height: "70px",
-                                            background: "#dee2e6",
-                                            borderRadius: "4px",
-                                            display: "flex",
-                                            alignItems: "center",
-                                            justifyContent: "center",
-                                            fontSize: "10px",
-                                            color: "#6c757d"
-                                        }}>
-                                            No Image
-                                        </div>
-
+                                        {/* 수정 지점 1: 찜 목록 이미지 로직 추가 및 구조적 오류 수정 */}
+                                        {book.coverImageUrl ? ( // URL이 있으면
+                                            <img
+                                                src={book.coverImageUrl}
+                                                alt={book.title}
+                                                style={{ width: "50px", height: "70px", borderRadius: "4px", objectFit: 'cover' }}
+                                                loading="lazy"
+                                            />
+                                        ) : ( // 없으면 대체 이미지 표시
+                                            <div style={{
+                                                width: "50px",
+                                                height: "70px",
+                                                background: "#dee2e6",
+                                                borderRadius: "4px",
+                                                display: "flex",
+                                                alignItems: "center",
+                                                justifyContent: "center",
+                                                fontSize: "10px",
+                                                color: "#6c757d"
+                                            }}>
+                                                No Image
+                                            </div>
+                                        )}
+                                        {/* ---------------------------------------------------------- */}
                                         <div style={{ flex: 1 }}>
                                             <h4 style={{ fontSize: "14px", fontWeight: "600", marginBottom: "4px" }}>
                                                 {book.title}
@@ -218,20 +228,30 @@ export default function MyPage() {
                                     border: "1px solid #e9ecef"
                                 }}>
                                     <div style={{ display: "flex", gap: "16px", alignItems: "center" }}>
-                                        <div style={{
-                                            width: "60px",
-                                            height: "80px",
-                                            background: "#dee2e6",
-                                            borderRadius: "4px",
-                                            display: "flex",
-                                            alignItems: "center",
-                                            justifyContent: "center",
-                                            fontSize: "10px",
-                                            color: "#6c757d"
-                                        }}>
-                                            No Image
-                                        </div>
-
+                                        {/* 수정 지점 2: 내가 만든 책 목록 이미지 로직 추가 */}
+                                        {book.coverImageUrl ? ( // URL이 있으면
+                                            <img
+                                                src={book.coverImageUrl}
+                                                alt={book.title}
+                                                style={{ width: "60px", height: "80px", borderRadius: "4px", objectFit: 'cover' }}
+                                                loading="lazy"
+                                            />
+                                        ) : ( // 없으면 대체 이미지 표시
+                                            <div style={{
+                                                width: "60px",
+                                                height: "80px",
+                                                background: "#dee2e6",
+                                                borderRadius: "4px",
+                                                display: "flex",
+                                                alignItems: "center",
+                                                justifyContent: "center",
+                                                fontSize: "10px",
+                                                color: "#6c757d"
+                                            }}>
+                                                No Image
+                                            </div>
+                                        )}
+                                        {/* ---------------------------------------------------------- */}
                                         <div>
                                             <h3 style={{
                                                 fontSize: "16px",
