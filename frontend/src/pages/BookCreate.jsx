@@ -280,10 +280,10 @@ export default function BookCreate() {
                                         }}
                                     >
                                         <MenuItem value="" disabled>장르를 선택하세요</MenuItem>
-                                        <MenuItem value="NOVEL">소설</MenuItem>
-                                        <MenuItem value="ESSAY">에세이</MenuItem>
-                                        <MenuItem value="HISTORY">역사</MenuItem>
                                         <MenuItem value="FANTASY">판타지</MenuItem>
+                                        <MenuItem value="ROMANCE">로맨스</MenuItem>
+                                        <MenuItem value="THRILLER">스릴러</MenuItem>
+                                        <MenuItem value="SF">SF</MenuItem>
                                     </Select>
                                 </FormControl>
                             </Box>
