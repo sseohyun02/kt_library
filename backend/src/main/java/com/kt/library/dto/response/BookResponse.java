@@ -20,4 +20,18 @@ public class BookResponse {
     private Book.Genre genre;
     private LocalDateTime createDate;
     private LocalDateTime updateDate;
+
+    // ← 추가!
+    public static BookResponse from(Book book) {
+        return new BookResponse(
+            book.getId(),
+            book.getTitle(),
+            book.getContent(),
+            book.getAuthor(),
+            book.getLanguage(),
+            book.getGenre(),
+            book.getCreateDate(),
+            book.getUpdateDate()
+        );
+    }
 }

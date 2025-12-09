@@ -1,12 +1,10 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { login } from "../services/authService";
 
 export default function Login() {
-    const navigate = useNavigate();
-
     const [formData, setFormData] = useState({
-        loginId: "",
+        loginId: "",  // ← 다시 loginId로
         password: ""
     });
 
@@ -21,22 +19,15 @@ export default function Login() {
         e.preventDefault();
 
         const dto = {
-            loginId: formData.loginId,
+            loginId: formData.loginId,  // ← loginId
             password: formData.password
         };
 
         try {
-            // 로그인 API 호출
             const res = await login(dto);
-
-            // 로그인 정보 저장 (기존 코드 유지)
             localStorage.setItem("loginUser", JSON.stringify(res.data));
-
             alert("로그인 성공!");
-
-            // ✨ 페이지 새로고침으로 Layout 업데이트
             window.location.href = "/mypage";
-
         } catch (err) {
             console.error(err);
             alert(err.response?.data?.message || "로그인 실패");
@@ -55,7 +46,7 @@ export default function Login() {
                             type="text"
                             name="loginId"
                             className="login-input"
-                            placeholder=""
+                            placeholder="아이디를 입력하세요"
                             value={formData.loginId}
                             onChange={handleChange}
                             required

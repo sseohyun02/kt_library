@@ -16,7 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder; // WebConfig 에서 주입
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     @Transactional
@@ -53,14 +53,12 @@ public class UserServiceImpl implements UserService {
     @Transactional(readOnly = true)
     public UserResponse login(LoginRequest request){
 
-        // 1. 아이디로 회원 조회
-        // 수정됨: getLoginID() -> getEmail() (소문자 d)
-        User user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new IllegalArgumentException("이메일이 존재하지 않습니다."));
+        // 1. 아이디로 회원 조회 (수정!)
+        User user = userRepository.findByLoginId(request.getLoginId())  // ← email → loginId
+                .orElseThrow(() -> new IllegalArgumentException("아이디가 존재하지 않습니다."));  // ← 메시지 수정
 
         // 2. 비밀번호 확인
         if(!passwordEncoder.matches(request.getPassword(), user.getPassword())){
-            // 메시지도 조금 더 자연스럽게 수정했습니다 ("존재하지" -> "일치하지")
             throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
         }
 

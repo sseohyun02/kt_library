@@ -6,19 +6,45 @@ import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import ThumbUpIcon from "@mui/icons-material/ThumbUp";
 import ThumbUpOffAltIcon from "@mui/icons-material/ThumbUpOffAlt";
 import { getBook } from "../services/bookService";
+import { toggleFavorite, checkFavorited } from "../services/favoriteService";  // ← 추가!
 
 export default function BookDetail() {
     const { id } = useParams();
     const [book, setBook] = useState(null);
     const [liked, setLiked] = useState(false);
-    const [saved, setSaved] = useState(false);
+    const [saved, setSaved] = useState(false);  // ← 찜 상태
     const [comment, setComment] = useState("");
     const [comments, setComments] = useState([]);
     const [likedCount, setLikedCount] = useState(0);
 
     useEffect(() => {
+        // 책 정보 로드
         getBook(id).then(setBook).catch(console.error);
+
+        // ← 추가! 찜 상태 확인
+        loadFavoriteStatus();
     }, [id]);
+
+    // ← 추가! 찜 상태 로드
+    const loadFavoriteStatus = async () => {
+        try {
+            const isFavorited = await checkFavorited(id);
+            setSaved(isFavorited);
+        } catch (error) {
+            console.error("찜 상태 확인 실패:", error);
+        }
+    };
+
+    // ← 추가! 찜 토글
+    const handleToggleFavorite = async () => {
+        try {
+            await toggleFavorite(id);
+            setSaved(!saved);  // 상태 토글
+        } catch (error) {
+            console.error("찜 토글 실패:", error);
+            alert("찜 처리 중 오류가 발생했습니다.");
+        }
+    };
 
     if (!book) return <p>Loading...</p>;
 
@@ -68,10 +94,9 @@ export default function BookDetail() {
 
                     {/* 정보 그리드 */}
                     <Box sx={{ alignSelf:'flex-end', display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 2, maxWidth : 400, mb : 3 }}>
-                        {/* 첫 번째 아이템: 2열 span */}
                         <Box
                             sx={{
-                                gridColumn: '1 / -1', // 첫 번째 아이템이 전체 2열 span
+                                gridColumn: '1 / -1',
                                 border: '1px solid #ccc',
                                 borderRadius: 1,
                                 p: 1,
@@ -81,7 +106,6 @@ export default function BookDetail() {
                             저자: {book.author || '-'}
                         </Box>
 
-                        {/* 나머지 아이템 */}
                         <Box sx={{ border: '1px solid #ccc', borderRadius: 1, p: 1, textAlign: 'right' }}>
                             장르: {book.genre || '-'}
                         </Box>
@@ -89,7 +113,6 @@ export default function BookDetail() {
                             언어: {book.language || '-'}
                         </Box>
                     </Box>
-
 
                     {/* 내용 */}
                     <Box sx={{ border: '1px solid #ccc', borderRadius: 1, p: 2, minHeight: 250, whiteSpace: 'pre-wrap' }}>
@@ -110,15 +133,15 @@ export default function BookDetail() {
 
                     {/* 좋아요 + 찜 버튼 */}
                     <Box sx={{ display: 'flex', gap: 2, mt: 2, alignItems: 'center' }}>
-                        {/*찜 버튼*/}
+                        {/* 찜 버튼 - 수정! */}
                         <Box sx = {{display : 'flex', alignItems: 'center', gap : 1}}>
-                            <IconButton onClick={() => setSaved(!saved)} color="error">
+                            <IconButton onClick={handleToggleFavorite} color="error">
                                 {saved ? <FavoriteIcon /> : <FavoriteBorderIcon />}
                             </IconButton>
                             <Typography variant = "body2">찜</Typography>
                         </Box>
 
-                        {/*추천 버튼*/}
+                        {/* 추천 버튼 */}
                         <Box sx = {{display: 'flex', alignItems: 'center', gap: 1}}>
                             <IconButton onClick={() => {
                                 setLiked(!liked);
@@ -138,7 +161,6 @@ export default function BookDetail() {
                     댓글
                 </Typography>
 
-                {/* 입력창 + 버튼 */}
                 <Box sx={{ display: 'flex', gap: 1, mb: 2 }}>
                     <TextField
                         fullWidth
@@ -159,7 +181,6 @@ export default function BookDetail() {
                     </Button>
                 </Box>
 
-                {/* 댓글 목록 */}
                 <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
                     {comments.map((c, idx) => (
                         <Box key={idx} sx={{ p: 1, border: '1px solid #ccc', borderRadius: 1, backgroundColor: '#999' }}>
