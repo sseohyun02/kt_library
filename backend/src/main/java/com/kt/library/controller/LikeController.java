@@ -7,13 +7,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/books")
+@RequestMapping("/likes")
 @RequiredArgsConstructor
 public class LikeController {
 
     private final LikeService likeService;
 
-    @PostMapping("/{bookId}/like")
+    @PostMapping("/{bookId}")
     public String toggleLike(
             @PathVariable Long bookId,
             @SessionAttribute(name="loginUser", required = false)UserResponse loginUser
