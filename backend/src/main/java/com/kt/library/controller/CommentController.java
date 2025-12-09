@@ -1,5 +1,6 @@
 package com.kt.library.controller;
 
+import com.kt.library.domain.User;
 import com.kt.library.dto.request.CommentCreateRequest;
 import com.kt.library.dto.request.CommentUpdateRequest;
 import com.kt.library.dto.response.CommentResponse;
@@ -25,7 +26,7 @@ public class CommentController {
             @PathVariable Long bookId,
             @RequestBody CommentCreateRequest request
     ) {
-        if(loginUser == null){
+        if (loginUser == null) {
             throw new UnAuthorizedException("로그인이 필요합니다.");
         }
         // 서비스 호출 - 순서: userId, bookId, request
@@ -42,14 +43,22 @@ public class CommentController {
     @PutMapping("/{commentId}")
     public CommentResponse updateComment(
             @PathVariable Long commentId,
-            @RequestBody CommentUpdateRequest request
+            @RequestBody CommentUpdateRequest request,
+            @SessionAttribute(name = "loginUser", required = false) UserResponse loginUser
     ) {
-        return commentService.updateComment(commentId, request);
+        if (loginUser == null) throw new UnAuthorizedException("로그인이 필요합니다.");
+
+        return commentService.updateComment(commentId, loginUser.getId(), request);
     }
 
     // 댓글 삭제
     @DeleteMapping("/{commentId}")
-    public void deleteComment(@PathVariable Long commentId) {
-        commentService.deleteComment(commentId);
+    public void deleteComment(
+            @PathVariable Long commentId,
+            @SessionAttribute(name = "loginUser", required = false) UserResponse loginUser
+    ) {
+        if (loginUser == null) throw new UnAuthorizedException("로그인이 필요합니다.");
+
+        commentService.deleteComment(commentId, loginUser.getId());
     }
 }

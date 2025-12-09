@@ -12,7 +12,7 @@ public interface CommentService {
 
     List<CommentResponse> getCommentsByBook(Long bookId);
 
-    CommentResponse updateComment(Long commentId, CommentUpdateRequest request);
+    CommentResponse updateComment(Long commentId, Long userId, CommentUpdateRequest request);
 
-    void deleteComment(Long commentId);
+    void deleteComment(Long commentId, Long userId);
 }

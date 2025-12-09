@@ -1,11 +1,14 @@
 package com.kt.library.dto.response;
 
 import com.kt.library.domain.Comment;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-
+import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 
 @Getter
+@NoArgsConstructor
+@AllArgsConstructor
 public class CommentResponse {
 
     private Long id;
