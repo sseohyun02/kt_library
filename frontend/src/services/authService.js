@@ -29,13 +29,21 @@ export async function logout() {
         await axios.post(`${API}/users/logout`, {}, {
             withCredentials: true
         });
+
+        // 로그인 여부 + 사용자 정보 모두 삭제
         localStorage.removeItem('isLoggedIn');
+        localStorage.removeItem('loginUser');
+
     } catch (error) {
         console.error('로그아웃 실패:', error);
+
+        // 에러가 나도 localStorage는 지워야 함
         localStorage.removeItem('isLoggedIn');
+        localStorage.removeItem('loginUser');
         throw error;
     }
 }
+
 
 // 로그인 상태 확인
 export function isLoggedIn() {
