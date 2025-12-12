@@ -25,6 +25,21 @@ export default function BookDetail() {
     const [comment, setComment] = useState("");
     const [comments, setComments] = useState([]);
 
+    const LANGUAGE_LABEL = {
+        KO: "한국어",
+        EN: "영어",
+        JP: "일본어",
+        CN: "중국어",
+    };
+
+    const GENRE_LABEL = {
+        FANTASY: "판타지",
+        ROMANCE: "로맨스",
+        THRILLER: "스릴러",
+        SF: "SF",
+    };
+
+
     // -----------------------------------------------------
     // 🔥 초기 로딩 - 책 정보 / 댓글 / 좋아요 수 / 찜 수 / 찜 여부
     // -----------------------------------------------------
@@ -131,11 +146,10 @@ export default function BookDetail() {
                     {/* 정보 그리드 */}
                     <Box sx={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 2 }}>
                         <Box sx={{ border: "1px solid #ccc", borderRadius: 1, p: 1 }}>저자: {book.author}</Box>
-                        <Box sx={{ border: "1px solid #ccc", borderRadius: 1, p: 1 }}>장르: {book.genre}</Box>
-                        <Box sx={{ border: "1px solid #ccc", borderRadius: 1, p: 1 }}>언어: {book.language}</Box>
                         <Box sx={{ border: "1px solid #ccc", borderRadius: 1, p: 1 }}>
-                            전체 페이지: {book.pages || "-"}
-                        </Box>
+                            장르: {GENRE_LABEL[book.genre] || book.genre}</Box>
+                        <Box sx={{ border: "1px solid #ccc", borderRadius: 1, p: 1 }}>
+                            언어: {LANGUAGE_LABEL[book.language] || book.language}</Box>
                     </Box>
 
                     {/* 줄거리 */}
