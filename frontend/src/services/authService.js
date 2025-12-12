@@ -44,8 +44,19 @@ export async function logout() {
     }
 }
 
-
 // 로그인 상태 확인
 export function isLoggedIn() {
     return localStorage.getItem('isLoggedIn') === 'true';
+}
+
+// 로그인 세션 체크
+export async function sessionCheck() {
+  try {
+    const res = await axios.get(`${API}/users/session-check`, {
+      withCredentials: true,
+    });
+    return res.data; // 세션이 있으면 사용자 정보
+  } catch (e) {
+    return null; // 세션 없음
+  }
 }

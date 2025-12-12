@@ -2,7 +2,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import logo from "../assets/logo.png";
 import { getBooks } from "../services/bookService";
-import { logout, isLoggedIn } from "../services/authService"; // ← 추가!
+import { logout, isLoggedIn, sessionCheck } from "../services/authService"; // ← 추가!
 
 export default function Layout({ children }) {
     const [query, setQuery] = useState("");
@@ -11,7 +11,19 @@ export default function Layout({ children }) {
 
     // 로그인 상태 확인 (컴포넌트 로드 시)
     useEffect(() => {
-        setLoggedIn(isLoggedIn());
+        async function verifyLogin() {
+            const session = await sessionCheck();
+
+            if (session) {
+                setLoggedIn(true);
+            } else {
+                // 세션이 없으면 강제 로그아웃 처리
+                localStorage.removeItem("loginUser");
+                setLoggedIn(false);
+            }
+        }
+
+        verifyLogin();
     }, []);
 
     const handleSearch = async (e) => {
