@@ -29,4 +29,13 @@ public class LikeController {
     public int getLikeCount(@PathVariable Long bookId) {
         return likeService.getLikeCount(bookId);
     }
+
+    @GetMapping("/{bookId}/status")
+    public boolean checkUserLike(
+            @PathVariable Long bookId,
+            @SessionAttribute(name = "loginUser", required = false) UserResponse loginUser
+    ) {
+        if (loginUser == null) return false; // 로그인 안 했으면 당연히 좋아요 false
+        return likeService.isLiked(bookId, loginUser.getId());
+    }
 }

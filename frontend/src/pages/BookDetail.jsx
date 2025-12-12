@@ -41,6 +41,12 @@ export default function BookDetail() {
         checkFavorited(id)
             .then((res) => setSaved(res))
             .catch((err) => console.log("찜 여부 확인 오류:", err));
+
+        // 좋아요 여부 확인
+        checkLiked(id)
+            .then((res) => setLiked(res))
+            .catch((err) => console.log("좋아요 여부 확인 오류:", err));
+
     }, [id]);
 
     if (!book) return <p>Loading...</p>;
