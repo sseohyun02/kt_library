@@ -11,8 +11,23 @@ phases:
   build:
     commands:
       - npm run build
+      - cd ..
+
+  post_build:
+    commands:
+      - echo "Prepare deploy bundle"
+      - rm -rf deploy_bundle
+      - mkdir -p deploy_bundle
+
+      # appspec + scripts 추가 (CodeDeploy용)
+      - cp appspec.yml deploy_bundle/
+      - cp -r scripts deploy_bundle/
+
+      # 기존 프론트 빌드 결과 그대로 복사
+      - mkdir -p deploy_bundle/frontend/dist
+      - cp -r frontend/dist/* deploy_bundle/frontend/dist/
 
 artifacts:
-  base-directory: frontend/dist
+  base-directory: deploy_bundle
   files:
-    - '**/*'
+    - "**/*"
