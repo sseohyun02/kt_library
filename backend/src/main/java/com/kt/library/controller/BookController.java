@@ -14,8 +14,6 @@ import com.kt.library.dto.request.BookAiImageRequest;
 import org.springframework.http.ResponseEntity;
 
 import java.util.List;
-import java.util.Map;
-
 
 @RestController
 @RequestMapping("/books")
@@ -23,7 +21,6 @@ import java.util.Map;
 public class BookController {
 
     private final BookService bookService;
-
     // 전체 목록
     @GetMapping
     public List<BookResponse> getBooks() {
@@ -92,7 +89,6 @@ public class BookController {
         return ResponseEntity.ok(imageUrl);
     }
 }
-
 
 //    // (새 기능) 백엔드가 직접 AI로 이미지 생성하는 API
 //    @PostMapping("/{bookId}/generate-cover")

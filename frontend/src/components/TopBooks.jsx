@@ -4,7 +4,7 @@ import BookCard from "./BookCard";
 import { getBooks } from "../services/bookService";
 
 export default function TopBooks() {
-    const [sort, setSort] = useState("조회순");
+    const [sort, setSort] = useState("인기순");
     const [books, setBooks] = useState([]);
 
     const trackRef = useRef(null);
@@ -87,9 +87,20 @@ export default function TopBooks() {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
+    // 정렬 적용
+    const sortedBooks = [...books].sort((a, b) => {
+        if (sort === "인기순") {
+            return (b.likeCount || 0) - (a.likeCount || 0); // 좋아요 많은 순
+        }
+        if (sort === "최신순") {
+            return (b.id || 0) - (a.id || 0); // id 높은 = 최신
+        }
+        return 0;
+    });
+
     // books 길이가 10보다 적으면 placeholder 채우기
     const paddedBooks = Array.from({ length: 10 }, (_, idx) => {
-        const src = books[idx];
+        const src = sortedBooks[idx];
         return src
             ? { ...src, rank: `Top ${idx + 1}` }
             : {
@@ -109,10 +120,10 @@ export default function TopBooks() {
                 </div>
                 <div className="sort-controls">
                     <button
-                        className={`sort-link ${sort === "조회순" ? "active" : ""}`}
-                        onClick={() => setSort("조회순")}
+                        className={`sort-link ${sort === "인기순" ? "active" : ""}`}
+                        onClick={() => setSort("인기순")}
                     >
-                        조회순
+                        인기순
                     </button>
                     <span className="divider">·</span>
                     <button

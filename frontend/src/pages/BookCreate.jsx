@@ -1,5 +1,8 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+
+import axios from "axios";
+
 import {
   TextField,
   Button,
@@ -37,6 +40,20 @@ export default function BookCreate() {
   const [coverImage, setCoverImage] = useState(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const [openAiKey, setOpenAiKey] = useState("");
+  const [imageMode, setImageMode] = useState("none");
+
+  // 책 등록 조건
+ const basicFilled =
+  formData.title.trim() !== "" &&
+  formData.language.trim() !== "" &&
+  formData.genre.trim() !== "" &&
+  formData.introduction.trim() !== "" &&
+  formData.content.trim() !== "";
+  const canSubmit =
+    // 이미지 생성 안 함 → 바로 가능
+    imageMode === "none" ||
+    // AI 생성 모드 → coverImage 있어야 가능
+    (imageMode === "ai" && coverImage);
 
   // 수정 모드일 때 기존 데이터 로드
   useEffect(() => {
@@ -129,45 +146,41 @@ Style: Modern, eye-catching cover that fits the genre.
   };
 
   // 등록 / 수정 처리 + 표지 URL 저장
-  const handleSubmit = async () => {
-    if (!coverImage) {
-      alert("먼저 표지를 생성해주세요!");
-      return;
-    }
+const handleSubmit = async () => {
+  let finalCover = coverImage; // 기본값(AI 생성 or 업로드 미리보기)
 
-    // 백엔드 DTO: title, content, author, language, genre
-    const dto = {
-      title: formData.title,
-      content: formData.content,
-      language: formData.language,
-      genre: formData.genre,
-    };
+  // (1) 이미지 생성 안 함
+  if (imageMode === "none") {
+    finalCover = null;
+  }
 
-    try {
-      if (isEditMode) {
-        // 1) 책 정보 수정
-        await updateBook(id, dto);
-        // 2) 표지 URL 저장
-        await saveAiCover(Number(id), coverImage);
+  // (AI 모드는 기존처럼 coverImage 그대로)
 
-        alert("도서가 수정되었습니다!");
-        navigate(`/books/${id}`);
-      } else {
-        // 1) 책 생성
-        const created = await createBook(dto); // BookResponse 반환(id 포함)
-        // 2) 새 책의 표지 URL 저장
-        await saveAiCover(created.id, coverImage);
-
-        alert("도서가 등록되었습니다!");
-        navigate(`/books/${created.id}`);
-      }
-
-      navigate("/mypage");
-    } catch (error) {
-      console.error(error);
-      alert("작업 중 오류가 발생했습니다.");
-    }
+  // 📌 기존 DTO 유지
+  const dto = {
+    title: formData.title,
+    content: formData.content,
+    language: formData.language,
+    genre: formData.genre,
   };
+
+  try {
+    if (isEditMode) {
+      await updateBook(id, dto);
+      await saveAiCover(Number(id), finalCover);
+    } else {
+      const created = await createBook(dto);
+      await saveAiCover(created.id, finalCover);
+    }
+
+    alert("작업이 완료되었습니다!");
+    navigate("/mypage");
+
+  } catch (error) {
+    console.error(error);
+    alert("작업 중 오류가 발생했습니다.");
+  }
+};
 
   return (
     <Box
@@ -239,51 +252,75 @@ Style: Modern, eye-catching cover that fits the genre.
               )}
             </Paper>
 
-            {/* OpenAI API Key 입력 */}
-            <TextField
-              type="password"
-              label="OpenAI API Key"
-              value={openAiKey}
-              onChange={(e) => setOpenAiKey(e.target.value)}
-              size="small"
-              sx={{
-                width: 280,
-                "& .MuiOutlinedInput-root": {
-                  bgcolor: "#f1f3f5",
-                  borderRadius: 1.5,
-                  "& fieldset": { border: "none" },
-                },
-              }}
-            />
+            {/* 이미지 생성 방식 선택 */}
+            <Box sx={{ mt: 2, mb: 2 }}>
+              <Typography sx={{ fontWeight: 600, mb: 1 }}>표지 생성 방식 선택</Typography>
 
-            <Button
-              variant="contained"
-              onClick={handleGenerateCover}
-              disabled={
-                isGenerating || !formData.title || !formData.content || !openAiKey
-              }
-              sx={{
-                width: 220,
-                py: 1.5,
-                bgcolor: "#adb5bd",
-                color: "#fff",
-                fontSize: "15px",
-                fontWeight: 600,
-                borderRadius: 1.5,
-                boxShadow: "none",
-                textTransform: "none",
-                "&:hover": {
-                  bgcolor: "#868e96",
-                  boxShadow: "none",
-                },
-                "&:disabled": {
-                  bgcolor: "#dee2e6",
-                  color: "#adb5bd",
-                },
-              }}
-            >
-              {isGenerating ? "생성 중..." : "표지 생성"}
-            </Button>
+              <label style={{ display: "block", marginBottom: "4px" }}>
+                <input
+                  type="radio"
+                  value="none"
+                  checked={imageMode === "none"}
+                  onChange={() => setImageMode("none")}
+                />
+                이미지 생성 안 함
+              </label>
+
+              <label style={{ display: "block", marginBottom: "4px" }}>
+                <input
+                  type="radio"
+                  value="ai"
+                  checked={imageMode === "ai"}
+                  onChange={() => setImageMode("ai")}
+                />
+                AI로 자동 생성
+              </label>
+            </Box>
+
+            {/* OpenAI API Key 입력 - ai 선택 시에만 나오도록 수정 */}
+            {imageMode === "ai" && (
+              <TextField
+                type="password"
+                label="OpenAI API Key"
+                value={openAiKey}
+                onChange={(e) => setOpenAiKey(e.target.value)}
+                size="small"
+                sx={{
+                  width: 280,
+                  "& .MuiOutlinedInput-root": {
+                    bgcolor: "#f1f3f5",
+                    borderRadius: 1.5,
+                    "& fieldset": { border: "none" },
+                  },
+                }}
+              />
+            )}
+
+            {imageMode === "ai" && (
+              <Button
+                variant="contained"
+                onClick={handleGenerateCover}
+                disabled={
+                  isGenerating ||
+                  !formData.title ||
+                  !(formData.introduction && formData.introduction.length > 0) ||
+                  !openAiKey ||
+                  imageMode !== "ai"
+                }
+                sx={{
+                  width: 220,
+                  py: 1.5,
+                  bgcolor: "#adb5bd",
+                  color: "#fff",
+                  fontSize: "15px",
+                  fontWeight: 600,
+                  borderRadius: 1.5,
+                  textTransform: "none",
+                }}
+              >
+                {isGenerating ? "생성 중..." : "표지 생성"}
+              </Button>
+            )}
           </Box>
 
           {/* 오른쪽: 입력 폼 */}
@@ -487,7 +524,7 @@ Style: Modern, eye-catching cover that fits the genre.
           <Button
             variant="contained"
             onClick={handleSubmit}
-            disabled={!coverImage}
+            disabled={!canSubmit || !basicFilled}
             sx={{
               width: 280,
               py: 1.8,

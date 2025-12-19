@@ -50,6 +50,11 @@ public class LikeServiceImpl implements LikeService {
         return true; // 좋아요 추가됨
     }
 
+    @Override
+    public boolean isLiked(Long bookId, Long userId) {
+        return likeRepository.existsByBookIdAndUserId(bookId, userId);
+    }
+
     public int getLikeCount(Long bookId) {
         return likeRepository.countByBookId(bookId);
     }

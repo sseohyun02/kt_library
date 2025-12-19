@@ -51,4 +51,15 @@ public class UserController {
         }
         return ResponseEntity.ok("로그아웃 되었습니다.");
     }
+
+    // 세션 확인 API
+    @GetMapping("/session-check")
+    public ResponseEntity<UserResponse> sessionCheck(
+            @SessionAttribute(name = "loginUser", required = false) UserResponse loginUser
+    ) {
+        if (loginUser == null) {
+            return ResponseEntity.status(401).build(); // 세션 없음
+        }
+        return ResponseEntity.ok(loginUser); // 세션 있음
+    }
 }
