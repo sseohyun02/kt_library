@@ -7,6 +7,11 @@ files:
     overwrite: true
 
 hooks:
+  BeforeInstall:
+    - location: scripts/fix_permissions.sh
+      timeout: 300
+      runas: root
+
   AfterInstall:
     - location: scripts/deploy.sh
       timeout: 1200
