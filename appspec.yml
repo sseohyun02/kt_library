@@ -6,12 +6,13 @@ files:
     destination: /home/ec2-user/kt_library
     overwrite: true
 
-hooks:
-  BeforeInstall:
-    - location: scripts/fix_permissions.sh
-      timeout: 300
-      runas: root
+permissions: # 권한 설정을 appspec에서 미리 정의
+  - object: /home/ec2-user/kt_library
+    pattern: "**"
+    owner: ec2-user
+    group: ec2-user
 
+hooks: 
   AfterInstall:
     - location: scripts/deploy.sh
       timeout: 1200
