@@ -2,18 +2,30 @@ version: 0.0
 os: linux
 
 files:
+  # 1) 전체 번들을 앱 경로로 복사 (백엔드/스크립트/기타)
   - source: /
     destination: /home/ec2-user/kt_library
     overwrite: true
 
-permissions: # 권한 설정을 appspec에서 미리 정의
+  # 2) 프론트 dist만 Nginx 루트로 복사 (403 해결 포인트)
+  - source: frontend/dist/
+    destination: /var/www/test-angular-project
+    overwrite: true
+
+permissions:
   - object: /home/ec2-user/kt_library
     pattern: "**"
     owner: ec2-user
     group: ec2-user
 
-hooks: 
+hooks:
   AfterInstall:
+    # 프론트 권한 + nginx 재시작
+    - location: scripts/deploy_frontend.sh
+      timeout: 300
+      runas: root
+
+    # 백엔드 빌드/실행
     - location: scripts/deploy.sh
       timeout: 1200
       runas: root
