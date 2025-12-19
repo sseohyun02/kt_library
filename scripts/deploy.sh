@@ -2,8 +2,7 @@
 set -e
 
 APP_ROOT=/home/ec2-user/kt_library
-BACKEND_DIR="$APP_ROOT/backend"
-LOG_FILE="$APP_ROOT/backend/app.log"
+JAR_NAME=$(ls $APP_ROOT/backend/build/libs/*.jar | grep -v plain | tail -n 1)
 
 echo "> 1. 빌드 시작 (EC2 내에서 직접 빌드)"
 cd "$BACKEND_ROOT"
