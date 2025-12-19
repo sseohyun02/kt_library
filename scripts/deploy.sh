@@ -1,46 +1,40 @@
 #!/bin/bash
-set -e
 
-APP_ROOT=/home/ec2-user/kt_library
-BACKEND_DIR="$APP_ROOT/backend"
-LOG_FILE="$APP_ROOT/backend/app.log"
+# 1. 백엔드 배포 (기존과 동일)
+echo ">>> 백엔드 배포 시작..."
+cd /home/ec2-user/kt_library/backend
 
-echo "[1/4] 기존 프로세스 종료"
-pkill -f "java.*\.jar" || true
-
-echo "[2/4] 권한 수정"
-sudo chown -R ec2-user:ec2-user "$APP_ROOT"
-
-echo "[3/4] 백엔드 빌드 시작"
-if [ -d "$BACKEND_DIR" ]; then
-    cd "$BACKEND_DIR"
+# 실행 중인 백엔드 종료
+CURRENT_PID=$(pgrep -f "kt_library-0.0.1-SNAPSHOT.jar")
+if [ -z "$CURRENT_PID" ]; then
+    echo ">>> 현재 실행 중인 애플리케이션이 없습니다."
 else
-    echo "ERROR: $BACKEND_DIR 폴더가 없습니다!"
-    exit 1
+    echo ">>> 실행 중인 애플리케이션 종료: $CURRENT_PID"
+    kill -15 $CURRENT_PID
+    sleep 5
 fi
 
-export JAVA_HOME="/usr/lib/jvm/java-17-amazon-corretto"
-export PATH=$JAVA_HOME/bin:$PATH
-
+# 백엔드 빌드 및 실행
 chmod +x gradlew
-echo ">>> Gradle Build Running..."
-./gradlew clean build -x test
+./gradlew build -x test
 
-# -----------------------------------------------------------
-# 🚨 여기가 수정된 부분입니다! (plain jar 제외)
-# -----------------------------------------------------------
-echo "[4/4] 서버 실행"
-# 1. build/libs 폴더의 모든 jar 파일 중
-# 2. 'plain'이라는 글자가 들어간 건 제외하고 (grep -v)
-# 3. 가장 최신 파일 1개를 선택
-JAR=$(ls -1t build/libs/*.jar | grep -v "plain" | head -n 1)
+JAR_PATH=$(ls build/libs/*.jar | grep -v "plain")
+echo ">>> JAR 실행: $JAR_PATH"
+nohup java -jar $JAR_PATH > app.log 2>&1 &
 
-if [ -z "$JAR" ]; then
-    echo "ERROR: 빌드된 JAR 파일을 찾을 수 없습니다!"
-    exit 1
-fi
 
-echo "Deploying Executable JAR: $JAR"
-nohup java -jar "$JAR" > "$LOG_FILE" 2>&1 &
+# 2. 프론트엔드 배포 (여기가 추가됨!)
+echo ">>> 프론트엔드 배포 시작..."
+cd /home/ec2-user/kt_library/frontend
 
-echo ">>> 배포 성공!"
+# 의존성 설치 및 빌드
+echo ">>> React 의존성 설치 중..."
+npm install
+echo ">>> React 빌드 중..."
+npm run build
+
+# Nginx 폴더로 결과물 이동 (dist 폴더 내용물만 옮김)
+echo ">>> 빌드 결과물을 Nginx 폴더로 이동"
+sudo cp -r dist/* /var/www/test-angular-project/
+
+echo ">>> 배포 완료!"
