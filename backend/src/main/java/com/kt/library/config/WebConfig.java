@@ -21,6 +21,7 @@ public class WebConfig implements WebMvcConfigurer {
                 .addPathPatterns("/**") // 모든 주소 검사
                 .excludePathPatterns(   // 검사 제외할 프리패스 대상들
                         "/",                    // 메인 페이지
+                        "/health",
                         "/users/signup",    // 회원가입
                         "/users/login",     // 로그인
                         "/users/logout",    // 로그아웃
