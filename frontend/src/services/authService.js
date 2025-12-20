@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API = "";
+const API = "/api";
 
 // 회원가입
 export async function signup(data) {

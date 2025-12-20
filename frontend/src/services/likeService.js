@@ -1,5 +1,5 @@
 import axios from "axios";
-const API = "";
+const API = "/api";
 
 export function toggleLike(bookId) {
     return axios.post(

@@ -1,5 +1,5 @@
 import axios from "axios";
-const API = "";
+const API = "/api";
 
 // 댓글 목록
 export function getComments(bookId) {

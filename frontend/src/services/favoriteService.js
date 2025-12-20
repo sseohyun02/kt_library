@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API = "";
+const API = "/api";
 
 //  찜 토글 (추가/해제)
 export function toggleFavorite(bookId) {
