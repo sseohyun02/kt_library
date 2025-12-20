@@ -1,7 +1,7 @@
 import axios from "axios";
 
 // API 기본 URL
-const API_BASE = "http://localhost:8080";
+const API_BASE = "";
 
 // axios 기본 설정 (전체 요청에 세션 쿠키 포함)
 axios.defaults.withCredentials = true;

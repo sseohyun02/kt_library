@@ -1,5 +1,5 @@
 import axios from "axios";
-const API = "http://localhost:8080";
+const API = "";
 
 export function toggleLike(bookId) {
     return axios.post(

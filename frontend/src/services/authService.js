@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API = "http://localhost:8080";
+const API = "";
 
 // 회원가입
 export async function signup(data) {
