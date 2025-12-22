@@ -181,6 +181,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 @Slf4j
@@ -193,45 +195,54 @@ public class OpenAiImageServiceImpl implements OpenAiImageService {
     @Override
     public String generateImage(String content, String apiKey) {
 
-        // 1. [번역 단계] 한글/중국어/영어 상관없이 영어 프롬프트로 변환
+        // 1. [번역 단계] 한글 -> 영어 (무료 구글 번역 API 활용)
         String englishPrompt = translateToEnglish(content);
-        log.info(">>> 번역/가공된 프롬프트: {}", englishPrompt);
 
-        // 2. Stability AI 호출 (번역된 프롬프트 사용)
-        return callStabilityAi(englishPrompt, apiKey);
+        // 2. [스타일 추가] 번역된 영어 뒤에 고퀄리티 태그 추가
+        String finalPrompt = englishPrompt + ", (best quality), fantasy art style, highly detailed, 8k resolution, cinematic lighting";
+        log.info(">>> 최종 요청 프롬프트: {}", finalPrompt);
+
+        // 3. Stability AI 호출 (프론트에서 받은 키 사용)
+        return callStabilityAi(finalPrompt, apiKey);
     }
 
-    // ★ 텍스트를 영어 프롬프트로 변환하는 메서드
+    // ★ [핵심 수정] 실제 무료 번역을 수행하는 메서드
     private String translateToEnglish(String originalText) {
         if (originalText == null || originalText.isEmpty()) {
-            return "A mysterious book cover, fantasy style";
+            return "A mysterious book cover";
         }
 
-        // [STEP 1] 실제 번역 API가 있다면 여기서 호출 (예: Google Translate, GPT)
-        // String translated = googleTranslateService.translate(originalText);
-        // return translated + ", book cover style, 8k";
+        try {
+            // 구글 무료 번역 API (client=gtx) 호출 URL 생성
+            String url = "https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=en&dt=t&q="
+                    + URLEncoder.encode(originalText, StandardCharsets.UTF_8);
 
-        // [STEP 2] API가 없을 때의 대체 로직 (현재 적용됨)
-        // 한글/중국어가 그대로 들어가도 그림이 나오도록 '강력한 영어 스타일 태그'를 뒤에 붙입니다.
+            // RestTemplate으로 요청 (키 필요 없음)
+            String response = restTemplate.getForObject(url, String.class);
 
-        // 줄바꿈 제거
-        String cleanText = originalText.replace("\n", " ").replace("\r", " ");
+            // 응답 파싱 (JSON 라이브러리 없이 문자열 처리로 가볍게 해결)
+            // 응답 형태: [[["Translated Text","Original",,,]], ...]
+            if (response != null && response.contains("\"")) {
+                int start = response.indexOf("\"") + 1;
+                int end = response.indexOf("\"", start);
+                return response.substring(start, end);
+            }
 
-        // 길이 제한 (Stability AI는 너무 긴 텍스트를 싫어함)
-        if (cleanText.length() > 100) {
-            cleanText = cleanText.substring(0, 100);
+        } catch (Exception e) {
+            log.warn("번역 실패, 원본 텍스트를 그대로 사용합니다. 오류: {}", e.getMessage());
         }
 
-        // ★ 비영어권 텍스트 뒤에 영어 키워드를 붙여서 AI가 "책 표지"임을 인식하게 함
-        return cleanText + ", (book cover), (best quality), fantasy art style, highly detailed, 8k resolution, cinematic lighting";
+        // 번역 실패 시 원본 그대로 리턴 (혹은 기본값)
+        return originalText;
     }
 
-    // Stability AI API 호출 로직
+    // Stability AI API 호출 로직 (기존과 동일)
     private String callStabilityAi(String prompt, String apiKey) {
+        // SDXL 모델 사용
         String url = "https://api.stability.ai/v1/generation/stable-diffusion-xl-1024-v1-0/text-to-image";
 
         HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", "Bearer " + apiKey);
+        headers.set("Authorization", "Bearer " + apiKey); // 프론트에서 받은 키
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setAccept(List.of(MediaType.APPLICATION_JSON));
 
@@ -239,7 +250,11 @@ public class OpenAiImageServiceImpl implements OpenAiImageService {
         body.put("text_prompts", List.of(
                 Map.of("text", prompt, "weight", 1)
         ));
+
+        // 스타일 프리셋 (원하시면 제거 가능)
         body.put("style_preset", "fantasy-art");
+
+        // SDXL 권장 해상도
         body.put("height", 1024);
         body.put("width", 1024);
         body.put("cfg_scale", 7);
@@ -250,24 +265,25 @@ public class OpenAiImageServiceImpl implements OpenAiImageService {
         try {
             Map response = restTemplate.postForObject(url, entity, Map.class);
 
-            if (response == null) throw new RuntimeException("응답이 비어있습니다.");
+            if (response == null) throw new RuntimeException("Stability API 응답이 비어있습니다.");
 
             Object artifactsObj = response.get("artifacts");
             if (!(artifactsObj instanceof List) || ((List<?>) artifactsObj).isEmpty()) {
-                throw new RuntimeException("이미지 데이터가 없습니다.");
+                throw new RuntimeException("이미지 데이터(artifacts)가 없습니다.");
             }
 
             Map artifact = (Map) ((List<?>) artifactsObj).get(0);
             String base64 = (String) artifact.get("base64");
 
+            // 프론트에서 바로 쓸 수 있게 포맷팅
             return "data:image/png;base64," + base64;
 
         } catch (HttpClientErrorException e) {
             log.error("Stability AI API 오류: {} - {}", e.getStatusCode(), e.getResponseBodyAsString());
-            throw new RuntimeException("이미지 생성 API 오류: " + e.getStatusCode());
+            throw new RuntimeException("이미지 생성 API 호출 오류: " + e.getStatusCode());
         } catch (Exception e) {
             log.error("이미지 생성 중 알 수 없는 오류", e);
-            throw new RuntimeException("이미지 생성 시스템 오류");
+            throw new RuntimeException("이미지 생성 시스템 오류가 발생했습니다.");
         }
     }
 }
