@@ -1,14 +1,88 @@
+/// /package com.kt.library.service.impl;
+/// /
+/// /import com.kt.library.service.OpenAiImageService;
+/// /import lombok.RequiredArgsConstructor;
+/// /import org.springframework.beans.factory.annotation.Value;
+/// /import org.springframework.stereotype.Service;
+/// /import org.springframework.web.client.RestTemplate;
+/// /import org.springframework.http.*;
+/// /
+/// /import java.util.HashMap;
+/// /import java.util.Map;
+/// /
+/// /@Service
+/// /@RequiredArgsConstructor
+/// /public class OpenAiImageServiceImpl implements OpenAiImageService {
+/// /
+/// /    private final RestTemplate restTemplate = new RestTemplate();
+/// /
+/// /    @Override
+/// /    public String generateImage(String prompt, String apiKey) {
+/// /
+/// /        String url = "https://api.openai.com/v1/images/generations";
+/// /
+/// /        // 헤더 설정
+/// /        HttpHeaders headers = new HttpHeaders();
+/// /        headers.setContentType(MediaType.APPLICATION_JSON);
+/// /        headers.setBearerAuth(apiKey);
+/// /
+/// /        // 바디 설정
+/// /        Map<String, Object> requestBody = new HashMap<>();
+/// /        requestBody.put("model", "dall-e-3");
+/// /        requestBody.put("prompt", prompt);
+/// /        requestBody.put("size", "1024x1024");
+/// /
+/// /        HttpEntity<Map<String, Object>> request = new HttpEntity<>(requestBody, headers);
+/// /
+/// /        try {
+/// /            // 요청 보내기
+/// /            Map response = restTemplate.postForObject(url, request, Map.class);
+/// /
+/// /            if (response == null) {
+/// /                throw new RuntimeException("OpenAI 응답이 null 입니다.");
+/// /            }
+/// /
+/// /            Object dataObj = response.get("data");
+/// /            if (!(dataObj instanceof java.util.List) || ((java.util.List<?>) dataObj).isEmpty()) {
+/// /                throw new RuntimeException("OpenAI 응답에 data 필드가 없거나 비어 있습니다: " + response);
+/// /            }
+/// /
+/// /            Map first = (Map) ((java.util.List<?>) dataObj).get(0);
+/// /            Object urlObj = first.get("url");
+/// /            if (urlObj == null) {
+/// /                throw new RuntimeException("OpenAI 응답에 url 필드가 없습니다: " + first);
+/// /            }
+/// /
+/// /            return urlObj.toString();
+/// /
+/// /        } catch (org.springframework.web.client.HttpClientErrorException e) {
+/// /            // 👇 여기 로그 보고 진짜 원인 확인
+/// /            System.out.println("=== OpenAI 4xx 오류 ===");
+/// /            System.out.println("Status: " + e.getStatusCode());
+/// /            System.out.println("Body  : " + e.getResponseBodyAsString());
+/// /            throw new RuntimeException("OpenAI 4xx 오류", e);
+/// /
+/// /        } catch (org.springframework.web.client.HttpServerErrorException e) {
+/// /            System.out.println("=== OpenAI 5xx 오류 ===");
+/// /            System.out.println("Status: " + e.getStatusCode());
+/// /            System.out.println("Body  : " + e.getResponseBodyAsString());
+/// /            throw new RuntimeException("OpenAI 5xx 오류", e);
+/// /        }
+/// /    }
+/// /}
+//
+////테스트용(stability.ai의 무료 api 키 사용)
 //package com.kt.library.service.impl;
 //
 //import com.kt.library.service.OpenAiImageService;
 //import lombok.RequiredArgsConstructor;
-//import org.springframework.beans.factory.annotation.Value;
-//import org.springframework.stereotype.Service;
-//import org.springframework.web.client.RestTemplate;
 //import org.springframework.http.*;
+//import org.springframework.stereotype.Service;
+//import org.springframework.web.client.HttpClientErrorException;
+//import org.springframework.web.client.HttpServerErrorException;
+//import org.springframework.web.client.RestTemplate;
 //
-//import java.util.HashMap;
-//import java.util.Map;
+//import java.util.*;
 //
 //@Service
 //@RequiredArgsConstructor
@@ -19,71 +93,99 @@
 //    @Override
 //    public String generateImage(String prompt, String apiKey) {
 //
-//        String url = "https://api.openai.com/v1/images/generations";
+//        // ⭐ Stability 무료 계정에서 사용 가능한 엔진(SDXL)
+//        String url = "https://api.stability.ai/v1/generation/stable-diffusion-xl-1024-v1-0/text-to-image";
 //
-//        // 헤더 설정
+//        // ---- 헤더 설정 ----
 //        HttpHeaders headers = new HttpHeaders();
+//        headers.set("Authorization", "Bearer " + apiKey);
 //        headers.setContentType(MediaType.APPLICATION_JSON);
-//        headers.setBearerAuth(apiKey);
+//        headers.setAccept(List.of(MediaType.APPLICATION_JSON));  // ⭐ Accept 문제 해결
 //
-//        // 바디 설정
-//        Map<String, Object> requestBody = new HashMap<>();
-//        requestBody.put("model", "dall-e-3");
-//        requestBody.put("prompt", prompt);
-//        requestBody.put("size", "1024x1024");
+//        // ---- 요청 바디 ----
+//        Map<String, Object> body = new HashMap<>();
+//        body.put("text_prompts", List.of(
+//                Map.of("text", prompt)
+//        ));
 //
-//        HttpEntity<Map<String, Object>> request = new HttpEntity<>(requestBody, headers);
+//        // ⭐ SDXL은 1024x1024 해상도를 사용해야 함
+//        body.put("height", 1024);
+//        body.put("width", 1024);
+//        body.put("cfg_scale", 7);
+//        body.put("samples", 1);
+//
+//        HttpEntity<Map<String, Object>> entity = new HttpEntity<>(body, headers);
 //
 //        try {
-//            // 요청 보내기
-//            Map response = restTemplate.postForObject(url, request, Map.class);
+//            System.out.println("===== Stability API 요청 시작 =====");
+//            System.out.println("Prompt: " + prompt);
 //
+//            Map response = restTemplate.postForObject(url, entity, Map.class);
+//
+//            System.out.println("===== Stability API 응답 =====");
+//            System.out.println(response);
+//
+//            // ---- null 체크 ----
 //            if (response == null) {
-//                throw new RuntimeException("OpenAI 응답이 null 입니다.");
+//                throw new RuntimeException("Stability API 응답이 null입니다.");
 //            }
 //
-//            Object dataObj = response.get("data");
-//            if (!(dataObj instanceof java.util.List) || ((java.util.List<?>) dataObj).isEmpty()) {
-//                throw new RuntimeException("OpenAI 응답에 data 필드가 없거나 비어 있습니다: " + response);
+//            // ---- artifacts 검사 ----
+//            Object artifactsObj = response.get("artifacts");
+//            if (!(artifactsObj instanceof List) || ((List<?>) artifactsObj).isEmpty()) {
+//                throw new RuntimeException("artifacts가 비어있거나 존재하지 않습니다: " + response);
 //            }
 //
-//            Map first = (Map) ((java.util.List<?>) dataObj).get(0);
-//            Object urlObj = first.get("url");
-//            if (urlObj == null) {
-//                throw new RuntimeException("OpenAI 응답에 url 필드가 없습니다: " + first);
+//            Map artifact = (Map) ((List<?>) artifactsObj).get(0);
+//
+//            // ---- base64 / b64_json 자동 탐색 ----
+//            String base64 = null;
+//            if (artifact.containsKey("base64")) {
+//                base64 = (String) artifact.get("base64");
+//            } else if (artifact.containsKey("b64_json")) {
+//                base64 = (String) artifact.get("b64_json");
 //            }
 //
-//            return urlObj.toString();
+//            if (base64 == null) {
+//                throw new RuntimeException("base64 또는 b64_json 필드가 없습니다: " + artifact);
+//            }
 //
-//        } catch (org.springframework.web.client.HttpClientErrorException e) {
-//            // 👇 여기 로그 보고 진짜 원인 확인
-//            System.out.println("=== OpenAI 4xx 오류 ===");
-//            System.out.println("Status: " + e.getStatusCode());
-//            System.out.println("Body  : " + e.getResponseBodyAsString());
-//            throw new RuntimeException("OpenAI 4xx 오류", e);
+//            // ---- 프론트에서 즉시 사용 가능한 data:image 형태 반환 ----
+//            return "data:image/png;base64," + base64;
 //
-//        } catch (org.springframework.web.client.HttpServerErrorException e) {
-//            System.out.println("=== OpenAI 5xx 오류 ===");
-//            System.out.println("Status: " + e.getStatusCode());
-//            System.out.println("Body  : " + e.getResponseBodyAsString());
-//            throw new RuntimeException("OpenAI 5xx 오류", e);
+//        } catch (HttpClientErrorException | HttpServerErrorException e) {
+//            System.out.println("===== Stability API ERROR (HTTP) =====");
+//            System.out.println(e.getResponseBodyAsString());
+//            e.printStackTrace();
+//            throw new RuntimeException(
+//                    "Stable Diffusion API 오류: " +
+//                            e.getStatusCode() + " | " +
+//                            e.getResponseBodyAsString()
+//            );
+//
+//        } catch (Exception e) {
+//            System.out.println("===== Stability API ERROR (기타) =====");
+//            e.printStackTrace();
+//            throw new RuntimeException("Stable Diffusion 이미지 생성 실패: " + e.getMessage());
 //        }
 //    }
 //}
 
-//테스트용(stability.ai의 무료 api 키 사용)
 package com.kt.library.service.impl;
 
 import com.kt.library.service.OpenAiImageService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class OpenAiImageServiceImpl implements OpenAiImageService {
@@ -91,24 +193,68 @@ public class OpenAiImageServiceImpl implements OpenAiImageService {
     private final RestTemplate restTemplate = new RestTemplate();
 
     @Override
-    public String generateImage(String prompt, String apiKey) {
+    public String generateImage(String content, String apiKey) {
 
-        // ⭐ Stability 무료 계정에서 사용 가능한 엔진(SDXL)
+        // 1. [번역 단계] 한글 -> 영어 (무료 구글 번역 API 활용)
+        String englishPrompt = translateToEnglish(content);
+
+        // 2. [스타일 추가] 번역된 영어 뒤에 고퀄리티 태그 추가
+        String finalPrompt = englishPrompt + ", (best quality), fantasy art style, highly detailed, 8k resolution, cinematic lighting";
+        log.info(">>> 최종 요청 프롬프트: {}", finalPrompt);
+
+        // 3. Stability AI 호출 (프론트에서 받은 키 사용)
+        return callStabilityAi(finalPrompt, apiKey);
+    }
+
+    // ★ [핵심 수정] 실제 무료 번역을 수행하는 메서드
+    private String translateToEnglish(String originalText) {
+        if (originalText == null || originalText.isEmpty()) {
+            return "A mysterious book cover";
+        }
+
+        try {
+            // 구글 무료 번역 API (client=gtx) 호출 URL 생성
+            String url = "https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=en&dt=t&q="
+                    + URLEncoder.encode(originalText, StandardCharsets.UTF_8);
+
+            // RestTemplate으로 요청 (키 필요 없음)
+            String response = restTemplate.getForObject(url, String.class);
+
+            // 응답 파싱 (JSON 라이브러리 없이 문자열 처리로 가볍게 해결)
+            // 응답 형태: [[["Translated Text","Original",,,]], ...]
+            if (response != null && response.contains("\"")) {
+                int start = response.indexOf("\"") + 1;
+                int end = response.indexOf("\"", start);
+                return response.substring(start, end);
+            }
+
+        } catch (Exception e) {
+            log.warn("번역 실패, 원본 텍스트를 그대로 사용합니다. 오류: {}", e.getMessage());
+        }
+
+        // 번역 실패 시 원본 그대로 리턴 (혹은 기본값)
+        return originalText;
+    }
+
+    // Stability AI API 호출 로직 (기존과 동일)
+    private String callStabilityAi(String prompt, String apiKey) {
+        // SDXL 모델 사용
         String url = "https://api.stability.ai/v1/generation/stable-diffusion-xl-1024-v1-0/text-to-image";
 
-        // ---- 헤더 설정 ----
         HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", "Bearer " + apiKey);
+        headers.set("Authorization", "Bearer " + apiKey); // 프론트에서 받은 키
         headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.setAccept(List.of(MediaType.APPLICATION_JSON));  // ⭐ Accept 문제 해결
+        headers.setAccept(List.of(MediaType.APPLICATION_JSON));
 
-        // ---- 요청 바디 ----
         Map<String, Object> body = new HashMap<>();
         body.put("text_prompts", List.of(
-                Map.of("text", prompt)
+                Map.of("text", prompt, "weight", 1)
         ));
 
-        // ⭐ SDXL은 1024x1024 해상도를 사용해야 함
+        // 스타일 프리셋 (원하시면 제거 가능)
+        body.put("style_preset", "fantasy-art");
+
+        // SDXL 권장 해상도
         body.put("height", 1024);
         body.put("width", 1024);
         body.put("cfg_scale", 7);
@@ -117,56 +263,27 @@ public class OpenAiImageServiceImpl implements OpenAiImageService {
         HttpEntity<Map<String, Object>> entity = new HttpEntity<>(body, headers);
 
         try {
-            System.out.println("===== Stability API 요청 시작 =====");
-            System.out.println("Prompt: " + prompt);
-
             Map response = restTemplate.postForObject(url, entity, Map.class);
 
-            System.out.println("===== Stability API 응답 =====");
-            System.out.println(response);
+            if (response == null) throw new RuntimeException("Stability API 응답이 비어있습니다.");
 
-            // ---- null 체크 ----
-            if (response == null) {
-                throw new RuntimeException("Stability API 응답이 null입니다.");
-            }
-
-            // ---- artifacts 검사 ----
             Object artifactsObj = response.get("artifacts");
             if (!(artifactsObj instanceof List) || ((List<?>) artifactsObj).isEmpty()) {
-                throw new RuntimeException("artifacts가 비어있거나 존재하지 않습니다: " + response);
+                throw new RuntimeException("이미지 데이터(artifacts)가 없습니다.");
             }
 
             Map artifact = (Map) ((List<?>) artifactsObj).get(0);
+            String base64 = (String) artifact.get("base64");
 
-            // ---- base64 / b64_json 자동 탐색 ----
-            String base64 = null;
-            if (artifact.containsKey("base64")) {
-                base64 = (String) artifact.get("base64");
-            } else if (artifact.containsKey("b64_json")) {
-                base64 = (String) artifact.get("b64_json");
-            }
-
-            if (base64 == null) {
-                throw new RuntimeException("base64 또는 b64_json 필드가 없습니다: " + artifact);
-            }
-
-            // ---- 프론트에서 즉시 사용 가능한 data:image 형태 반환 ----
+            // 프론트에서 바로 쓸 수 있게 포맷팅
             return "data:image/png;base64," + base64;
 
-        } catch (HttpClientErrorException | HttpServerErrorException e) {
-            System.out.println("===== Stability API ERROR (HTTP) =====");
-            System.out.println(e.getResponseBodyAsString());
-            e.printStackTrace();
-            throw new RuntimeException(
-                    "Stable Diffusion API 오류: " +
-                            e.getStatusCode() + " | " +
-                            e.getResponseBodyAsString()
-            );
-
+        } catch (HttpClientErrorException e) {
+            log.error("Stability AI API 오류: {} - {}", e.getStatusCode(), e.getResponseBodyAsString());
+            throw new RuntimeException("이미지 생성 API 호출 오류: " + e.getStatusCode());
         } catch (Exception e) {
-            System.out.println("===== Stability API ERROR (기타) =====");
-            e.printStackTrace();
-            throw new RuntimeException("Stable Diffusion 이미지 생성 실패: " + e.getMessage());
+            log.error("이미지 생성 중 알 수 없는 오류", e);
+            throw new RuntimeException("이미지 생성 시스템 오류가 발생했습니다.");
         }
     }
 }
