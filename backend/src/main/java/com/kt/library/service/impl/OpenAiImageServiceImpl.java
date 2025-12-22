@@ -1,75 +1,75 @@
-////package com.kt.library.service.impl;
-////
-////import com.kt.library.service.OpenAiImageService;
-////import lombok.RequiredArgsConstructor;
-////import org.springframework.beans.factory.annotation.Value;
-////import org.springframework.stereotype.Service;
-////import org.springframework.web.client.RestTemplate;
-////import org.springframework.http.*;
-////
-////import java.util.HashMap;
-////import java.util.Map;
-////
-////@Service
-////@RequiredArgsConstructor
-////public class OpenAiImageServiceImpl implements OpenAiImageService {
-////
-////    private final RestTemplate restTemplate = new RestTemplate();
-////
-////    @Override
-////    public String generateImage(String prompt, String apiKey) {
-////
-////        String url = "https://api.openai.com/v1/images/generations";
-////
-////        // 헤더 설정
-////        HttpHeaders headers = new HttpHeaders();
-////        headers.setContentType(MediaType.APPLICATION_JSON);
-////        headers.setBearerAuth(apiKey);
-////
-////        // 바디 설정
-////        Map<String, Object> requestBody = new HashMap<>();
-////        requestBody.put("model", "dall-e-3");
-////        requestBody.put("prompt", prompt);
-////        requestBody.put("size", "1024x1024");
-////
-////        HttpEntity<Map<String, Object>> request = new HttpEntity<>(requestBody, headers);
-////
-////        try {
-////            // 요청 보내기
-////            Map response = restTemplate.postForObject(url, request, Map.class);
-////
-////            if (response == null) {
-////                throw new RuntimeException("OpenAI 응답이 null 입니다.");
-////            }
-////
-////            Object dataObj = response.get("data");
-////            if (!(dataObj instanceof java.util.List) || ((java.util.List<?>) dataObj).isEmpty()) {
-////                throw new RuntimeException("OpenAI 응답에 data 필드가 없거나 비어 있습니다: " + response);
-////            }
-////
-////            Map first = (Map) ((java.util.List<?>) dataObj).get(0);
-////            Object urlObj = first.get("url");
-////            if (urlObj == null) {
-////                throw new RuntimeException("OpenAI 응답에 url 필드가 없습니다: " + first);
-////            }
-////
-////            return urlObj.toString();
-////
-////        } catch (org.springframework.web.client.HttpClientErrorException e) {
-////            // 👇 여기 로그 보고 진짜 원인 확인
-////            System.out.println("=== OpenAI 4xx 오류 ===");
-////            System.out.println("Status: " + e.getStatusCode());
-////            System.out.println("Body  : " + e.getResponseBodyAsString());
-////            throw new RuntimeException("OpenAI 4xx 오류", e);
-////
-////        } catch (org.springframework.web.client.HttpServerErrorException e) {
-////            System.out.println("=== OpenAI 5xx 오류 ===");
-////            System.out.println("Status: " + e.getStatusCode());
-////            System.out.println("Body  : " + e.getResponseBodyAsString());
-////            throw new RuntimeException("OpenAI 5xx 오류", e);
-////        }
-////    }
-////}
+/// /package com.kt.library.service.impl;
+/// /
+/// /import com.kt.library.service.OpenAiImageService;
+/// /import lombok.RequiredArgsConstructor;
+/// /import org.springframework.beans.factory.annotation.Value;
+/// /import org.springframework.stereotype.Service;
+/// /import org.springframework.web.client.RestTemplate;
+/// /import org.springframework.http.*;
+/// /
+/// /import java.util.HashMap;
+/// /import java.util.Map;
+/// /
+/// /@Service
+/// /@RequiredArgsConstructor
+/// /public class OpenAiImageServiceImpl implements OpenAiImageService {
+/// /
+/// /    private final RestTemplate restTemplate = new RestTemplate();
+/// /
+/// /    @Override
+/// /    public String generateImage(String prompt, String apiKey) {
+/// /
+/// /        String url = "https://api.openai.com/v1/images/generations";
+/// /
+/// /        // 헤더 설정
+/// /        HttpHeaders headers = new HttpHeaders();
+/// /        headers.setContentType(MediaType.APPLICATION_JSON);
+/// /        headers.setBearerAuth(apiKey);
+/// /
+/// /        // 바디 설정
+/// /        Map<String, Object> requestBody = new HashMap<>();
+/// /        requestBody.put("model", "dall-e-3");
+/// /        requestBody.put("prompt", prompt);
+/// /        requestBody.put("size", "1024x1024");
+/// /
+/// /        HttpEntity<Map<String, Object>> request = new HttpEntity<>(requestBody, headers);
+/// /
+/// /        try {
+/// /            // 요청 보내기
+/// /            Map response = restTemplate.postForObject(url, request, Map.class);
+/// /
+/// /            if (response == null) {
+/// /                throw new RuntimeException("OpenAI 응답이 null 입니다.");
+/// /            }
+/// /
+/// /            Object dataObj = response.get("data");
+/// /            if (!(dataObj instanceof java.util.List) || ((java.util.List<?>) dataObj).isEmpty()) {
+/// /                throw new RuntimeException("OpenAI 응답에 data 필드가 없거나 비어 있습니다: " + response);
+/// /            }
+/// /
+/// /            Map first = (Map) ((java.util.List<?>) dataObj).get(0);
+/// /            Object urlObj = first.get("url");
+/// /            if (urlObj == null) {
+/// /                throw new RuntimeException("OpenAI 응답에 url 필드가 없습니다: " + first);
+/// /            }
+/// /
+/// /            return urlObj.toString();
+/// /
+/// /        } catch (org.springframework.web.client.HttpClientErrorException e) {
+/// /            // 👇 여기 로그 보고 진짜 원인 확인
+/// /            System.out.println("=== OpenAI 4xx 오류 ===");
+/// /            System.out.println("Status: " + e.getStatusCode());
+/// /            System.out.println("Body  : " + e.getResponseBodyAsString());
+/// /            throw new RuntimeException("OpenAI 4xx 오류", e);
+/// /
+/// /        } catch (org.springframework.web.client.HttpServerErrorException e) {
+/// /            System.out.println("=== OpenAI 5xx 오류 ===");
+/// /            System.out.println("Status: " + e.getStatusCode());
+/// /            System.out.println("Body  : " + e.getResponseBodyAsString());
+/// /            throw new RuntimeException("OpenAI 5xx 오류", e);
+/// /        }
+/// /    }
+/// /}
 //
 ////테스트용(stability.ai의 무료 api 키 사용)
 //package com.kt.library.service.impl;
@@ -171,19 +171,19 @@
 //    }
 //}
 
-
 package com.kt.library.service.impl;
 
 import com.kt.library.service.OpenAiImageService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.*;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class OpenAiImageServiceImpl implements OpenAiImageService {
@@ -191,13 +191,43 @@ public class OpenAiImageServiceImpl implements OpenAiImageService {
     private final RestTemplate restTemplate = new RestTemplate();
 
     @Override
-    public String generateImage(String prompt, String apiKey) {
+    public String generateImage(String content, String apiKey) {
 
-        // 1. [핵심] AWS에서 오류 안 나게 길이 강제 조절
-        // Stability AI는 긴 한글 프롬프트를 잘 이해 못하거나 오류를 뱉습니다.
-        // 안전하게 100자 이내로 자르고, 뒤에 스타일 키워드를 붙여주는 게 훨씬 잘 나옵니다.
-        String finalPrompt = makeSafePrompt(prompt);
+        // 1. [번역 단계] 한글/중국어/영어 상관없이 영어 프롬프트로 변환
+        String englishPrompt = translateToEnglish(content);
+        log.info(">>> 번역/가공된 프롬프트: {}", englishPrompt);
 
+        // 2. Stability AI 호출 (번역된 프롬프트 사용)
+        return callStabilityAi(englishPrompt, apiKey);
+    }
+
+    // ★ 텍스트를 영어 프롬프트로 변환하는 메서드
+    private String translateToEnglish(String originalText) {
+        if (originalText == null || originalText.isEmpty()) {
+            return "A mysterious book cover, fantasy style";
+        }
+
+        // [STEP 1] 실제 번역 API가 있다면 여기서 호출 (예: Google Translate, GPT)
+        // String translated = googleTranslateService.translate(originalText);
+        // return translated + ", book cover style, 8k";
+
+        // [STEP 2] API가 없을 때의 대체 로직 (현재 적용됨)
+        // 한글/중국어가 그대로 들어가도 그림이 나오도록 '강력한 영어 스타일 태그'를 뒤에 붙입니다.
+
+        // 줄바꿈 제거
+        String cleanText = originalText.replace("\n", " ").replace("\r", " ");
+
+        // 길이 제한 (Stability AI는 너무 긴 텍스트를 싫어함)
+        if (cleanText.length() > 100) {
+            cleanText = cleanText.substring(0, 100);
+        }
+
+        // ★ 비영어권 텍스트 뒤에 영어 키워드를 붙여서 AI가 "책 표지"임을 인식하게 함
+        return cleanText + ", (book cover), (best quality), fantasy art style, highly detailed, 8k resolution, cinematic lighting";
+    }
+
+    // Stability AI API 호출 로직
+    private String callStabilityAi(String prompt, String apiKey) {
         String url = "https://api.stability.ai/v1/generation/stable-diffusion-xl-1024-v1-0/text-to-image";
 
         HttpHeaders headers = new HttpHeaders();
@@ -206,17 +236,10 @@ public class OpenAiImageServiceImpl implements OpenAiImageService {
         headers.setAccept(List.of(MediaType.APPLICATION_JSON));
 
         Map<String, Object> body = new HashMap<>();
-
-        // 2. 프롬프트 설정
         body.put("text_prompts", List.of(
-                Map.of(
-                        "text", finalPrompt,
-                        "weight", 1
-                )
+                Map.of("text", prompt, "weight", 1)
         ));
-
-        // 3. 스타일 및 설정 (오류 방지용 기본값)
-        body.put("style_preset", "fantasy-art"); // 책 표지에 어울리는 스타일
+        body.put("style_preset", "fantasy-art");
         body.put("height", 1024);
         body.put("width", 1024);
         body.put("cfg_scale", 7);
@@ -225,10 +248,6 @@ public class OpenAiImageServiceImpl implements OpenAiImageService {
         HttpEntity<Map<String, Object>> entity = new HttpEntity<>(body, headers);
 
         try {
-            // AWS 로그용 출력 (nohup.out에서 확인 가능)
-            System.out.println(">>> [AWS 이미지 요청] 원본: " + prompt);
-            System.out.println(">>> [AWS 이미지 요청] 수정됨: " + finalPrompt);
-
             Map response = restTemplate.postForObject(url, entity, Map.class);
 
             if (response == null) throw new RuntimeException("응답이 비어있습니다.");
@@ -244,35 +263,11 @@ public class OpenAiImageServiceImpl implements OpenAiImageService {
             return "data:image/png;base64," + base64;
 
         } catch (HttpClientErrorException e) {
-            // 4. [중요] AWS에서 400 Bad Request가 뜨면 이유를 로그에 찍어야 함
-            System.out.println("!!! [AWS 에러] 상태 코드: " + e.getStatusCode());
-            System.out.println("!!! [AWS 에러] 내용: " + e.getResponseBodyAsString());
-
-            // 사용자에게는 너무 긴 메시지 대신 간단한 에러 반환
-            throw new RuntimeException("이미지 생성 실패(API 오류): " + e.getStatusCode());
-
+            log.error("Stability AI API 오류: {} - {}", e.getStatusCode(), e.getResponseBodyAsString());
+            throw new RuntimeException("이미지 생성 API 오류: " + e.getStatusCode());
         } catch (Exception e) {
-            System.out.println("!!! [AWS 에러] 시스템 오류: " + e.getMessage());
-            throw new RuntimeException("이미지 생성 중 오류 발생");
+            log.error("이미지 생성 중 알 수 없는 오류", e);
+            throw new RuntimeException("이미지 생성 시스템 오류");
         }
-    }
-
-    // ✂️ 프롬프트 안전하게 자르는 함수
-    private String makeSafePrompt(String original) {
-        if (original == null || original.isEmpty()) {
-            return "A mysterious book cover, fantasy style, high quality";
-        }
-
-        // 1. 줄바꿈 문자 제거 (JSON 에러 원인)
-        String clean = original.replace("\n", " ").replace("\r", " ");
-
-        // 2. 길이 제한 (한글 50~100자 넘어가면 토큰 꼬임 방지)
-        int safeLength = 100;
-        if (clean.length() > safeLength) {
-            clean = clean.substring(0, safeLength);
-        }
-
-        // 3. 보정 키워드 추가 (한글만 보내면 퀄리티가 낮음 -> 영어 키워드 추가)
-        return clean + ", best quality, book cover, 8k resolution, detailed";
     }
 }
