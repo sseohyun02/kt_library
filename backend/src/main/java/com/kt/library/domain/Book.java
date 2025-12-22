@@ -85,6 +85,8 @@ public class Book {
     private int likeCount = 0;
 
     // OpenAI로 생성한 이미지 URL 저장
-    @Column(name = "COVER_IMAGE_URL", columnDefinition = "TEXT")
+    // @Column(name = "COVER_IMAGE_URL", columnDefinition = "TEXT")
+    // Base64는 길이가 매우 길기 때문에 LONGTEXT 사용
+    @Column(name = "COVER_IMAGE_URL", columnDefinition = "LONGTEXT")
     private String coverImageUrl;
 }
